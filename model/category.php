@@ -2,12 +2,12 @@
 //importer le fichier bdd.php
 include "../utils/bdd.php";
 
-//ajouter une category (objet de connexion et le contenu de la catégorie)
+//ajouter une category (le contenu de la catégorie son nom)
 function addCategory(string $name) {
 
     try {
-        $request = "INSERT INTO category(`name`) VALUES (?)";
-        //Ecrire toutes les étapes de la requêtes 
+        //Stocker la requête dans une variable
+        $request = "INSERT INTO category(name) VALUES (?)";
         //1 préparer la requête
         $req = connectBDD()->prepare($request);
         //2 Bind les paramètres
@@ -39,12 +39,35 @@ function getCategoryById(int $id) {
     }
 }
 
-function addCategoryNosecure(string $name) {
+function getCategoryByNameNosecure(string $name) {
     try {
-        $request = "SELECT * FROM category where id_category = $name";
+        $request = "SELECT c.id_category, c.name FROM category AS c where c.name =  '$name'";
         $req = connectBDD()->query($request);
+        $req->setFetchMode(PDO::FETCH_ASSOC);
+        return $req->fetch();
     }
     catch(Exception $e) {
         echo $e->getMessage();
     }
+}
+
+?>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test injection SQL</title>
+</head>
+<body>
+    <form action="" method="post">
+        <input type="text" name="name" placeholder="Saisir le nom de la catégorie à trouver">
+        <input type="submit" value="envoyer" name="submit">
+    </form>
+</body>
+</html>
+
+<?php
+
+if (isset($_POST["submit"])) {
+    print_r(getCategoryByNameNosecure($_POST["name"]));
 }
