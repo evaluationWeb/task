@@ -1,8 +1,7 @@
 <?php
-include "../env.php";
-include "../utils/bdd.php";
+
 //ajouter une category (le contenu de la catégorie son nom)
-function addCategory(string $name)
+function addCategory(string $name) :string
 {
 
     try {
@@ -14,10 +13,10 @@ function addCategory(string $name)
         $req->bindParam(1, $name, PDO::PARAM_STR);
         //3 executer la requête
         $req->execute();
-
+        return "La catégorie a été ajouté en BDD";
         //Capture des erreurs 
     } catch (Exception $e) {
-        echo $e->getMessage();
+        return "Enregistrement impossible";
     }
 }
 
@@ -73,28 +72,18 @@ function deleteCategory(int $id) {
     }
 }
 
-function addCategoryV2(string $name)
-{
-
+function categoryExists(string $name) : bool {
     try {
-        //Stocker la requête dans une variable
-        $request = "INSERT INTO category(name) VALUES (:label)";
-        //1 préparer la requête
+        $request = "SELECT id_category FROM category WHERE name = ?";
         $req = connectBDD()->prepare($request);
-        //2 Bind les paramètres
-        //$req->bindParam(':label', $name, PDO::PARAM_STR);
-        //3 executer la requête
-        $req->execute(['label'=>$name]);
-
-        //Capture des erreurs 
+        $req->bindParam(1,$name, PDO::PARAM_STR);
+        $req->execute();
+        $reponse = $req->fetch(PDO::FETCH_ASSOC);
+        if(empty($reponse)) {
+            return false;
+        }
     } catch (Exception $e) {
-        echo $e->getMessage();
+       return false;
     }
+    return true;
 }
-echo "<pre>";
-print_r(getAllCategory());
-echo "</pre>";
-deleteCategory(1);
-echo "<pre>";
-print_r(getAllCategory());
-echo "</pre>";
