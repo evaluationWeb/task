@@ -38,7 +38,7 @@ function getCategoryById(int $id)
     }
 }
 
-function getAllCategory() {
+function getAllCategory(): array{
     try {
         $request = "SELECT c.id_category, c.name FROM category AS c";
         $req = connectBDD()->prepare($request);
@@ -71,7 +71,7 @@ function deleteCategory(int $id) {
         return $e->getMessage();//throw $th;
     }
 }
-
+//vérifier si le catégorie existe (true si oui)
 function categoryExists(string $name) : bool {
     try {
         $request = "SELECT id_category FROM category WHERE name = ?";

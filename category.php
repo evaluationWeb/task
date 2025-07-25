@@ -6,7 +6,7 @@
     include "utils/utilitaire.php";
     
     $message = createCategory();
-
+    //Logique pour ajouter une catégorie
     function createCategory() {
         //tester si le formulaire est soumis
         if(isset($_POST["submit"])) {
@@ -26,6 +26,13 @@
 
         return "";
     }
+    //Test si le bouton delete est soumis
+    if(isset($_POST["delete"])) {
+        deleteCategory($_POST["id"]);
+    }
+    //récupérer la liste des catégories
+    $categories = getAllCategory();
+
 ?>
 <html lang="fr">
 <head>
@@ -40,5 +47,15 @@
         <input type="submit" value="Ajouter" name="submit">
     </form>
     <p><?=$message?></p>
+    <h2>Liste des catégories</h2>
+    <!-- boucle pour afficher toutes les catégories -->
+    <?php foreach($categories as $category):?>
+        <div><?= $category["id_category"] . ' ' . $category["name"] ?>
+            <form action="" method="post">
+                <input type="hidden" name="id" value="<?= $category["id_category"]?>">
+                <input type="submit" value="supprimer" name="delete">
+            </form>
+        </div>
+    <?php endforeach?>
 </body>
 </html>
