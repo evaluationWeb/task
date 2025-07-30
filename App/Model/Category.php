@@ -83,4 +83,31 @@ class Category
            return [$e->getMessage()];
         }
     }
+    /**
+     * Méthode qui retourne true si la category existe en BDD
+     * @return bool true si existe / false si n'existe pas
+     */
+    public function isCategoryByNameExist() : bool{
+        try {
+            //Récupération de la valeur de name (category)
+            $name = $this->name;
+            //Ecrire la requête SQL
+            $request = "SELECT c.id_category FROM category AS c WHERE c.name = ?";
+            //préparer la requête
+            $req = $this->connexion->prepare($request);
+            //assigner le paramètre
+            $req->bindParam(1, $name, \PDO::PARAM_STR);
+            //exécuter la requête
+            $req->execute();
+            //récupérer le resultat
+            $data = $req->fetch(\PDO::FETCH_ASSOC);
+            //Test si l'enrgistrement est vide
+            if (empty($data) ) {
+                return false;
+            }
+            return true;
+        } catch(\Exception $e) {
+            return false;
+        }
+    }
 }

@@ -6,13 +6,13 @@
 </head>
 <body>
     <h1>Liste des categories</h1>
-    <!-- Boucler sur le tableau de Category -->
+    
     <table>
         <thead>
             <th>ID</th>
             <th>NAME</th>
         </thead>
-        
+    <!-- Boucler sur le tableau de Category -->
     <?php foreach($categories as $category): ?>
         <!-- afficher le contenu de l'attribut name (Category) -->
          <tr>

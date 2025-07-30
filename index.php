@@ -26,8 +26,8 @@ switch ($path) {
     case "/task/category/all" :
         $categoryController->showAllCategory();
         break;
-    case "/task/task/add":
-        echo "La tache a été ajouté";
+    case "/task/category/add":
+        $categoryController->addCategory();
         break;
     default:
         echo "404";
