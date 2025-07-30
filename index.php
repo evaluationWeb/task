@@ -19,20 +19,20 @@ $homeController = new HomeController();
 $categoryController = new CategoryController();
 
 //Test des routes
-switch ($path) {
-    case "/task/":
+switch (substr($path, strlen(BASE_URL))) {
+    case "/":
         $homeController->home();
         break;
-    case "/task/category/all" :
+    case "/category/all":
         $categoryController->showAllCategory();
         break;
-    case "/task/category/add":
+    case "/category/add":
         $categoryController->addCategory();
         break;
-    case "/task/category/delete":
+    case "/category/delete":
         $categoryController->removeCategory();
         break;
-    case "/task/category/update":
+    case "/category/update":
         $categoryController->modifyCategory();
         break;
     default:

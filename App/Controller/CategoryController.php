@@ -68,6 +68,7 @@ class CategoryController
             $this->category->deleteCategory($id);
             header('Location: /task/category/all?message=La catégorie a été supprimé');
         }
+        header('Location: /task/category/all');
     }
 
     public function modifyCategory()
