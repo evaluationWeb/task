@@ -7,7 +7,6 @@ use App\Utils\Utilitaire;
 
 class CategoryController
 {
-
     //Attribut Model Category
     private Category $category;
 
@@ -19,10 +18,17 @@ class CategoryController
 
     public function showAllCategory()
     {
-        //Récupération du message de confirmation
-        $message = $_GET["message"] ?? "";
+        //Test si le message existe
+        if (isset($_GET["message"])) {
+            //Récupération et sanitize du message
+            $message = Utilitaire::sanitize($_GET["message"]);
+            //refresh de la page au bout de 1 seconde et demie
+            header("Refresh:1.5; url=/task/category/all");
+        }
+        //tableau des catégories
         $categories = $this->category->findAllCategory();
         include "App/View/viewAllCategory.php";
+        
     }
 
     public function addCategory()
@@ -63,5 +69,43 @@ class CategoryController
             $this->category->deleteCategory($id);
             header('Location: /task/category/all?message=La catégorie a été supprimé');
         }
+    }
+
+    public function modifyCategory()
+    {
+        if(!isset($_POST["submit"]) ) {
+            //sanitize de l'id 
+            $id = Utilitaire::sanitize($_POST["id"]);
+            //récupération de la précédente valeur de la catégorie
+            $cat = $this->category->findCategory($id);
+        }
+        
+        if (isset($_POST["submit"])) {
+            //Test si le champ est vide
+            if (empty($_POST["name"])) {
+                //redirection à la liste des catégorie avec un message
+                header('Location: /task/category/all?message=Veuillez remplir tous les champs');
+            }
+            //nettoyage des informations
+            $name = Utilitaire::sanitize($_POST["name"]);
+            //test si le nouevau nom est différent de l'ancien
+            if ($name != $cat->getName()) {
+                //set du name
+                $this->category->setName($name);
+                //Test si la catégorie existe déja (éviter les doublons)
+                if ($this->category->isCategoryByNameExist()) {
+                    //redirection à la liste des catégorie avec un message
+                    header('Location: /task/category/all?message=la categorie existe déja');
+                }
+                //Mise à jour de la catégorie
+                $this->category->updateCategory($id);
+                //redirection à la liste des catégorie avec un message
+                header('Location: /task/category/all?message=la categorie a été mise à jour');
+            } else {
+                //redirection à la liste des catégorie avec un message
+                header('Location: /task/category/all?message=Le nom de la catégorie est identique');
+            }
+        }
+        include "App/View/viewModifyCategory.php";
     }
 }

@@ -12,6 +12,7 @@
             <th>ID</th>
             <th>NAME</th>
             <th>Supprimer</th>
+            <th>Editer</th>
         </thead>
     <!-- Boucler sur le tableau de Category -->
     <?php foreach($categories as $category): ?>
@@ -24,10 +25,14 @@
                 <input type="hidden" name="id" value="<?=$category->getIdCategory()?>">
                 <input type="submit" value="delete" name="delete">
             </form></td>
+            <td><form action="/task/category/update" method="post">
+                <input type="hidden" name="id" value="<?=$category->getIdCategory()?>">
+                <input type="submit" value="update" name="update">
+            </form></td>
          </tr>
     <?php endforeach ?>
 
     </table>
-    <p><?= $message ?></p>
+    <p><?= $message ?? "" ?></p>
 </body>
 </html>

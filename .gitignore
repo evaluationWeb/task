@@ -1,2 +1,5 @@
 task.code-workspace
 env.php
+/vendor/
+composer.lock
+/public/image/*.*

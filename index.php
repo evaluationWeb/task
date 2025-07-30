@@ -32,7 +32,9 @@ switch ($path) {
     case "/task/category/delete":
         $categoryController->removeCategory();
         break;
-    
+    case "/task/category/update":
+        $categoryController->modifyCategory();
+        break;
     default:
         echo "404";
         break;
