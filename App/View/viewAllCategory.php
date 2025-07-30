@@ -11,8 +11,7 @@
         <thead>
             <th>ID</th>
             <th>NAME</th>
-            <th>Supprimer<th>
-            <th>Supprimer<th>
+            <th>Supprimer</th>
         </thead>
     <!-- Boucler sur le tableau de Category -->
     <?php foreach($categories as $category): ?>
@@ -20,8 +19,6 @@
          <tr>
             <td><?= $category->getIdCategory() ?> </td>
             <td><?= $category->getName() ?> </td>
-            <!-- version lien avec id en GET-->
-            <td><a href="/task/category/delete?id=<?=$category->getIdCategory()?>">Supprimer</a></td>
             <!-- version avec id en post avec un bouton -->
             <td><form action="/task/category/delete" method="post">
                 <input type="hidden" name="id" value="<?=$category->getIdCategory()?>">

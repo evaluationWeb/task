@@ -32,7 +32,7 @@ class CategoryController
         //tester si le formulaire est soumis
         if (isset($_POST["submit"])) {
             //tester si le champs est non vide
-            if (!empty($_POST["name"])) {  
+            if (!empty($_POST["name"])) {
                 //nettoyer les informations
                 $name = Utilitaire::sanitize($_POST["name"]);
                 //Créer un Objet Category
@@ -52,7 +52,16 @@ class CategoryController
                 $message = "Veuillez remplir les champs obligatoire";
             }
         }
-        
+
         include "App/View/viewAddCategory.php";
+    }
+
+    public function removeCategory()
+    {
+        if (isset($_POST["delete"])) {
+            $id = Utilitaire::sanitize($_POST["id"]);
+            $this->category->deleteCategory($id);
+            header('Location: /task/category/all?message=La catégorie a été supprimé');
+        }
     }
 }

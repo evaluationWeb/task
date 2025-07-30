@@ -3,6 +3,8 @@
 namespace App\Model;
 
 use App\Utils\Bdd;
+use App\Model\CategoryException;
+use stdClass;
 
 class Category
 {
@@ -49,7 +51,7 @@ class Category
      * @var $name sera récupéré par l'objet 
      * @return void
      */
-    public function saveCategory(): void
+    public function saveCategory(): Category
     {
         try {
             //Récupération de la valeur de name (category)
@@ -62,9 +64,10 @@ class Category
             $req->bindParam(1, $name, \PDO::PARAM_STR);
             //3 executer la requête
             $req->execute();
-
+            return $this;
             //Capture des erreurs 
         } catch (\Exception $e) {
+            throw new CategoryException($e->getMessage());
         }
     }
 
@@ -72,7 +75,7 @@ class Category
      * Méthode qui retourne toutes les categories de la BDD
      * @return array Category tableau d'objet Category
      */
-    public function findAllCategory() : array
+    public function findAllCategory(): array
     {
         try {
             $request = "SELECT c.id_category AS idCategory , c.name FROM category AS c";
@@ -80,14 +83,16 @@ class Category
             $req->execute();
             return $req->fetchAll(\PDO::FETCH_CLASS, Category::class);
         } catch (\Exception $e) {
-           return [$e->getMessage()];
+            throw new CategoryException($e->getMessage());
         }
     }
+    
     /**
      * Méthode qui retourne true si la category existe en BDD
      * @return bool true si existe / false si n'existe pas
      */
-    public function isCategoryByNameExist() : bool{
+    public function isCategoryByNameExist(): bool
+    {
         try {
             //Récupération de la valeur de name (category)
             $name = $this->name;
@@ -102,12 +107,49 @@ class Category
             //récupérer le resultat
             $data = $req->fetch(\PDO::FETCH_ASSOC);
             //Test si l'enrgistrement est vide
-            if (empty($data) ) {
+            if (empty($data)) {
                 return false;
             }
             return true;
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return false;
+        }
+    }
+
+    /**
+     * Méthodes qui supprime une category en BDD
+     * @param int $id id de la catgeory à supprimer
+     */
+    public function deleteCategory(int $id): void
+    {
+        try {
+            $request = "DELETE FROM category WHERE id_category = ?";
+            $req = $this->connexion->prepare($request);
+            $req->bindParam(1, $id, \PDO::PARAM_INT);
+            $req->execute();
+        } catch (\Exception $e) {
+            throw new CategoryException($e->getMessage());
+        }
+    }
+    /**
+     * Méthode qui retourne une Category depuis son ID
+     * @param int $id ID de la category en BDD
+     * @return Category | stdClass | null retourne une Category si elle existe
+     */
+    public function findCategory(int $id): stdClass|null|Category
+    {
+        try {
+            $request = "SELECT c.id_category AS idCategory, c.name FROM category AS c WHERE c.id_category = ?";
+            //préparer la requête
+            $req = $this->connexion->prepare($request);
+            //assigner le paramètre
+            $req->bindParam(1, $id, \PDO::PARAM_STR);
+            //exécuter la requête
+            $req->execute();
+            //récupérer le resultat
+            return $req->fetch(\PDO::FETCH_CLASS, Category::class);
+        } catch (\Exception $e) {
+            throw new CategoryException($e->getMessage());
         }
     }
 }
