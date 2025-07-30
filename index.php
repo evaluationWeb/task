@@ -36,6 +36,6 @@ switch ($path) {
         $categoryController->modifyCategory();
         break;
     default:
-        echo "404";
+        $homeController->error404();
         break;
 }

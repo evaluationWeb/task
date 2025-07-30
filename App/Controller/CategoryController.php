@@ -28,7 +28,6 @@ class CategoryController
         //tableau des catégories
         $categories = $this->category->findAllCategory();
         include "App/View/viewAllCategory.php";
-        
     }
 
     public function addCategory()
@@ -50,7 +49,7 @@ class CategoryController
                     //ajouter la category en BDD
                     $category->saveCategory();
                     //redirection vers la liste des categories avec un paramètre GET
-                    header("Location: /task/category/all?message=La category " . $name . " a été ajouté en BDD");
+                    header("Location: /task/category/all?message=La category " . $name . " a été ajouté en BDD", true, 201);
                 } else {
                     $message = "La categorie existe déja";
                 }
@@ -73,13 +72,8 @@ class CategoryController
 
     public function modifyCategory()
     {
-        if(!isset($_POST["submit"]) ) {
-            //sanitize de l'id 
-            $id = Utilitaire::sanitize($_POST["id"]);
-            //récupération de la précédente valeur de la catégorie
-            $cat = $this->category->findCategory($id);
-        }
-        
+
+        //test si le formulaire est submit
         if (isset($_POST["submit"])) {
             //Test si le champ est vide
             if (empty($_POST["name"])) {
@@ -88,23 +82,23 @@ class CategoryController
             }
             //nettoyage des informations
             $name = Utilitaire::sanitize($_POST["name"]);
-            //test si le nouevau nom est différent de l'ancien
-            if ($name != $cat->getName()) {
-                //set du name
-                $this->category->setName($name);
-                //Test si la catégorie existe déja (éviter les doublons)
-                if ($this->category->isCategoryByNameExist()) {
-                    //redirection à la liste des catégorie avec un message
-                    header('Location: /task/category/all?message=la categorie existe déja');
-                }
-                //Mise à jour de la catégorie
-                $this->category->updateCategory($id);
+            $id = Utilitaire::sanitize($_POST["id"]);
+            //set du name
+            $this->category->setName($name);
+            //Test si la catégorie existe déja (éviter les doublons)
+            if ($this->category->isCategoryByNameExist()) {
                 //redirection à la liste des catégorie avec un message
-                header('Location: /task/category/all?message=la categorie a été mise à jour');
-            } else {
-                //redirection à la liste des catégorie avec un message
-                header('Location: /task/category/all?message=Le nom de la catégorie est identique');
+                header('Location: /task/category/all?message=Aucune mise à jour');
             }
+            //Mise à jour de la catégorie
+            $this->category->updateCategory($id);
+            //redirection à la liste des catégorie avec un message
+            header('Location: /task/category/all?message=la categorie a été mise à jour');
+        } else {
+            //sanitize de l'id 
+            $id = Utilitaire::sanitize($_POST["id"]);
+            //récupération de la précédente valeur de la catégorie
+            $cat = $this->category->findCategory($id);
         }
         include "App/View/viewModifyCategory.php";
     }
