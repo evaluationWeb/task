@@ -23,8 +23,8 @@ switch ($path) {
     case "/task/":
         $homeController->home();
         break;
-    case "/task/connexion" :
-        echo "Connexion";
+    case "/task/category/all" :
+        $categoryController->showAllCategory();
         break;
     case "/task/task/add":
         echo "La tache a été ajouté";
