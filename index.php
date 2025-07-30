@@ -10,10 +10,18 @@ $url = parse_url($_SERVER['REQUEST_URI']);
 //test si l'url posséde une route sinon on renvoi à la racine
 $path = $url['path'] ??  '/';
 
+//import des classes controller
+use App\Controller\HomeController;
+use App\Controller\CategoryController;
+
+//Instance des controller
+$homeController = new HomeController();
+$categoryController = new CategoryController();
+
 //Test des routes
 switch ($path) {
     case "/task/":
-        echo "Bienvenue";
+        $homeController->home();
         break;
     case "/task/connexion" :
         echo "Connexion";
