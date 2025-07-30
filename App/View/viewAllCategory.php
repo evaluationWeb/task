@@ -22,5 +22,6 @@
     <?php endforeach ?>
 
     </table>
+    <p><?= $message ?></p>
 </body>
 </html>

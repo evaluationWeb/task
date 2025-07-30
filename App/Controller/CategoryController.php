@@ -19,7 +19,8 @@ class CategoryController
 
     public function showAllCategory()
     {
-
+        //Récupération du message de confirmation
+        $message = $_GET["message"] ?? "";
         $categories = $this->category->findAllCategory();
         include "App/View/viewAllCategory.php";
     }
@@ -42,7 +43,8 @@ class CategoryController
                 if (!$category->isCategoryByNameExist()) {
                     //ajouter la category en BDD
                     $category->saveCategory();
-                    $message = "La category " . $name . " a été ajouté en BDD";
+                    //redirection vers la liste des categories avec un paramètre GET
+                    header("Location: /task/category/all?message=La category " . $name . " a été ajouté en BDD");
                 } else {
                     $message = "La categorie existe déja";
                 }
