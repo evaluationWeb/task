@@ -4,7 +4,6 @@ namespace App\Model;
 
 use App\Utils\Bdd;
 use App\Model\CategoryException;
-use stdClass;
 
 class Category
 {
