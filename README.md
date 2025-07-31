@@ -10,4 +10,9 @@ avec une struture similaire :
     const BDD_NAME = "mon nom de BDD";
     const BASE_URL = "/dossier_du_projet"
 ```
-
+saisir la commande suivante dans un terminal :
+```sh
+composer install
+```
+éditer le fichier **.htaccess** et remplacer le chemin de vôtre dossier racine
+dans rewrite base /dossier
