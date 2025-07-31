@@ -12,7 +12,6 @@
     <h1>Editer la catégorie</h1>
     <form action="" method="post">
         <input type="text" name="name" placeholder="Saisir le nom de la categorie" value="<?= $cat->GetName() ?>">
-
         <input type="hidden" name="id" value="<?= $cat->getIdCategory() ?>">
         <input type="submit" value="Enregistrer" name="submit">
     </form>

@@ -38,6 +38,7 @@ switch (substr($path, strlen(BASE_URL))) {
         $categoryController->modifyCategory();
         break;
     case "/user/register":
+        $userController->addUser();
         break;
     case "/user/connexion":
         break;

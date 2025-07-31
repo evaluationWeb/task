@@ -4,6 +4,7 @@ namespace App\Model;
 
 use App\Utils\Bdd;
 
+
 class User 
 {
     //Attributs
@@ -69,7 +70,6 @@ class User
 
     public function passwordVerify(string $hash) : bool 
     {
-
         return password_verify($this->password, $hash);
     }
     //Méthodes (Requête SQL)
@@ -82,24 +82,49 @@ class User
             $email = $this->email;
             $password = $this->password;
             $request = "INSERT INTO users(firstname, lastname, email, password) VALUE (?,?,?,?)";
-            //récupération de la connexion
-            $req = $this->connexion;
+
             //prépararation de la requête
-            $sqlRequest = $req->prepare($request);
-            //bind paral
-            $sqlRequest->bindParam(1, $firstname, \PDO::PARAM_STR);
-            $sqlRequest->bindParam(2, $lastname, \PDO::PARAM_STR);
-            $sqlRequest->bindParam(3, $email, \PDO::PARAM_STR);
-            $sqlRequest->bindParam(4, $password, \PDO::PARAM_STR);
+            $req = $this->connexion->prepare($request);
+            //bind param
+            $req->bindParam(1, $firstname, \PDO::PARAM_STR);
+            $req->bindParam(2, $lastname, \PDO::PARAM_STR);
+            $req->bindParam(3, $email, \PDO::PARAM_STR);
+            $req->bindParam(4, $password, \PDO::PARAM_STR);
             //éxécution de la requête
-            $sqlRequest->execute();
+            $req->execute();
             //récupération de l'id
-            $id = $req->lastInsertId('users');
+            $id = $this->connexion->lastInsertId('users');
             //set id et retourner l'utilisateur
             $this->idUser = $id;
             return $this;
         } catch(\Exception $e) {
             throw new \Exception($e->getMessage());
+        }
+    }
+
+
+    public function isUserByEmailExist(): bool
+    {
+        try {
+            //Récupération de la valeur de name (category)
+            $email = $this->email;
+            //Ecrire la requête SQL
+            $request = "SELECT u.id_users FROM users AS u WHERE u.email = ?";
+            //préparer la requête
+            $req = $this->connexion->prepare($request);
+            //assigner le paramètre
+            $req->bindParam(1, $email, \PDO::PARAM_STR);
+            //exécuter la requête
+            $req->execute();
+            //récupérer le resultat
+            $data = $req->fetch(\PDO::FETCH_ASSOC);
+            //Test si l'enrgistrement est vide
+            if (empty($data)) {
+                return false;
+            }
+            return true;
+        } catch (\Exception $e) {
+            return false;
         }
     }
 }
