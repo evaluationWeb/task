@@ -13,10 +13,12 @@ $path = $url['path'] ??  '/';
 //import des classes controller
 use App\Controller\HomeController;
 use App\Controller\CategoryController;
+use App\Controller\UserController;
 
 //Instance des controller
 $homeController = new HomeController();
 $categoryController = new CategoryController();
+$userController = new UserController();
 
 //Test des routes
 switch (substr($path, strlen(BASE_URL))) {
@@ -34,6 +36,12 @@ switch (substr($path, strlen(BASE_URL))) {
         break;
     case "/category/update":
         $categoryController->modifyCategory();
+        break;
+    case "/user/register":
+        break;
+    case "/user/connexion":
+        break;
+    case "/user/deconnexion":
         break;
     default:
         $homeController->error404();
