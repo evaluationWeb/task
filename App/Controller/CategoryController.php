@@ -18,12 +18,13 @@ class CategoryController
 
     public function showAllCategory()
     {
+        $message = "";
         //Test si le message existe
         if (isset($_GET["message"])) {
             //Récupération et sanitize du message
             $message = Utilitaire::sanitize($_GET["message"]);
             //refresh de la page au bout de 1 seconde et demie
-            header("Refresh:1.5; url=/task/category/all");
+            header("Refresh:4; url=/task/category/all");
         }
         //tableau des catégories
         $categories = $this->category->findAllCategory();
@@ -49,7 +50,7 @@ class CategoryController
                     //ajouter la category en BDD
                     $category->saveCategory();
                     //redirection vers la liste des categories avec un paramètre GET
-                    header("Location: /task/category/all?message=La category " . $name . " a été ajouté en BDD", true, 201);
+                    header("Location: /task/category/all?message=La category " . $name . " a été ajouté en BDD");
                 } else {
                     $message = "La categorie existe déja";
                 }
@@ -68,7 +69,7 @@ class CategoryController
             $this->category->deleteCategory($id);
             header('Location: /task/category/all?message=La catégorie a été supprimé');
         }
-        header('Location: /task/category/all');
+        //header('Location: /task/category/all');
     }
 
     public function modifyCategory()

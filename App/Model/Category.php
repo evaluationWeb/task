@@ -181,8 +181,7 @@ class Category
      * @var $name sera récupéré par l'objet 
      * @return void
      */
-    public function updateCategory(int $id): Category
-    {
+    public function updateCategory(int $id): void {
         try {
             //Récupération de la valeur de name (category)
             $name = $this->name;
@@ -195,7 +194,7 @@ class Category
             $req->bindParam(2, $id, \PDO::PARAM_INT);
             //3 executer la requête
             $req->execute();
-            return $this;
+         
             //Capture des erreurs 
         } catch (\Exception $e) {
             throw new CategoryException($e->getMessage());

@@ -39,7 +39,7 @@
             </tr>
         <?php endforeach ?>
     </table>
-    <p><?= $message ?? "" ?></p>
+    <p><?= $message ?></p>
 </body>
 
 </html>
