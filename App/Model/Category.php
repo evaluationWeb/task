@@ -139,7 +139,7 @@ class Category
     public function findCategory(int $id): null | Category
     {
         try {
-            $request = "SELECT c.id_category AS idCategory, c.name FROM category AS c WHERE c.id_category = ? LIMIT 1";
+            $request = "SELECT c.id_category AS idCategory, c.name FROM category AS c WHERE c.id_category = ?";
             //préparer la requête
             $req = $this->connexion->prepare($request);
             //assigner le paramètre
