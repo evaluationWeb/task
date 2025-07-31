@@ -3,7 +3,6 @@
 namespace App\Model;
 
 use App\Utils\Bdd;
-use stdClass;
 
 class User 
 {
