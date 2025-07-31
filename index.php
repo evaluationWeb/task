@@ -10,6 +10,8 @@ $url = parse_url($_SERVER['REQUEST_URI']);
 //test si l'url posséde une route sinon on renvoi à la racine
 $path = $url['path'] ??  '/';
 
+session_start();
+
 //import des classes controller
 use App\Controller\HomeController;
 use App\Controller\CategoryController;
@@ -20,31 +22,52 @@ $homeController = new HomeController();
 $categoryController = new CategoryController();
 $userController = new UserController();
 
-//Test des routes
-switch (substr($path, strlen(BASE_URL))) {
-    case "/":
-        $homeController->home();
-        break;
-    case "/category/all":
-        $categoryController->showAllCategory();
-        break;
-    case "/category/add":
-        $categoryController->addCategory();
-        break;
-    case "/category/delete":
-        $categoryController->removeCategory();
-        break;
-    case "/category/update":
-        $categoryController->modifyCategory();
-        break;
-    case "/user/register":
-        $userController->addUser();
-        break;
-    case "/user/connexion":
-        break;
-    case "/user/deconnexion":
-        break;
-    default:
-        $homeController->error404();
-        break;
+if ( !isset($_SESSION["connected"])) {
+    //Test des routes version deconnecté
+    switch (substr($path, strlen(BASE_URL))) {
+        case "/":
+            $homeController->home();
+            break;
+        case "/category/all":
+            $categoryController->showAllCategory();
+            break;
+        case "/user/connexion":
+            $userController->connexion();
+            break;
+        case "/user/register":
+            $userController->addUser();
+            break;
+        default:
+            $homeController->error404();
+            break;
+    }
+} else {
+//Test des routes version deconnecté
+    switch (substr($path, strlen(BASE_URL))) {
+        case "/":
+            $homeController->home();
+            break;
+        case "/category/all":
+            $categoryController->showAllCategory();
+            break;
+        case "/user/deconnexion":
+            $userController->deconnexion();
+            break;
+        case "/category/delete" :
+            $categoryController->removeCategory();
+            break;
+        case "/category/update" :
+            $categoryController->modifyCategory();
+            break;
+        case "/category/add" :
+            $categoryController->addCategory();
+            break;
+        default:
+            $homeController->error404();
+            break;
+    }
 }
+
+
+
+

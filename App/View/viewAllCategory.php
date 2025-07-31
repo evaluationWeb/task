@@ -41,5 +41,4 @@
     </table>
     <p><?= $message ?></p>
 </body>
-
 </html>

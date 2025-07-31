@@ -127,4 +127,28 @@ class User
             return false;
         }
     }
+
+
+    public function findUserByEmail(): User
+    {
+        try {
+            //Récupération de la valeur de name (category)
+            $email = $this->email;
+            //Ecrire la requête SQL
+            $request = "SELECT u.id_users AS idUser, u.firstname, u.lastname, u.password FROM users AS u WHERE u.email = ?";
+            //préparer la requête
+            $req = $this->connexion->prepare($request);
+            //assigner le paramètre
+            $req->bindParam(1, $email, \PDO::PARAM_STR);
+            //exécuter la requête
+            $req->execute();
+            
+            $req->setFetchMode(\PDO::FETCH_CLASS, User::class);
+            //récupérer le resultat
+            return $req->fetch();
+            
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
 }

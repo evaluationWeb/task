@@ -48,4 +48,41 @@ class UserController
         
         include "App/View/viewRegisterUser.php";
     }
+
+    public function connexion() {
+        $message = "";
+        if (isset($_POST["submit"])) {
+            if (!empty($_POST["email"]) && !empty($_POST["password"])) {
+                $email = Utilitaire::sanitize($_POST["email"]);
+                $password = Utilitaire::sanitize($_POST["password"]);
+                $this->user->setEmail($email);
+                $this->user->setPassword($password);
+                //Test si le compte existe
+                if ($this->user->isUserByEmailExist()) {
+                    //récupération du compte en BDD
+                    $userConnected = $this->user->findUserByEmail();
+
+                    //test si le password est identique
+                    if ($this->user->passwordVerify($userConnected->getPassword())) {
+                        $_SESSION["connected"] = true;
+                        $_SESSION["email"] = $email;
+                        $message = "connecté";
+                    } else {
+                        $message = "Les informations de connexion ne sont pas correctes";
+                    }
+                } else {
+                    $message = "Les informations de connexion ne sont pas correctes";
+                }
+            } else {
+                $message = "Veuillez remplir les champs";
+            }
+        }
+        include "App/View/viewConnexion.php";
+    }
+
+    public function deconnexion() {
+        session_destroy();
+        header('Location: /task/');
+        
+    }
 }

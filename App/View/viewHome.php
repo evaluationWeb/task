@@ -8,5 +8,6 @@
 <body>
     <?php include "App/View/components/navbar.php"; ?>
     <h1>Bienvenue <?= $name ?> sur notre super site !!</h1>
+    <?= $_SESSION["email"] ?? ""?>
 </body>
 </html>
