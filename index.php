@@ -16,11 +16,13 @@ session_start();
 use App\Controller\HomeController;
 use App\Controller\CategoryController;
 use App\Controller\UserController;
+use App\Controller\TaskController;
 
 //Instance des controller
 $homeController = new HomeController();
 $categoryController = new CategoryController();
 $userController = new UserController();
+$taskController = new TaskController();
 
 if ( !isset($_SESSION["connected"])) {
     //Test des routes version deconnecté
@@ -62,6 +64,13 @@ if ( !isset($_SESSION["connected"])) {
         case "/category/add" :
             $categoryController->addCategory();
             break;
+        case "/task/add" :
+            $taskController->addTask();
+            break;
+        case "/task/all" :
+            $taskController->showAllTask();
+            break;
+        
         default:
             $homeController->error404();
             break;

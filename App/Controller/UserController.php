@@ -64,8 +64,12 @@ class UserController
 
                     //test si le password est identique
                     if ($this->user->passwordVerify($userConnected->getPassword())) {
+                        
+                        //initialiser les super gobale de la SESSION
                         $_SESSION["connected"] = true;
                         $_SESSION["email"] = $email;
+                        $_SESSION["id"] = $userConnected->getIdUser();
+
                         $message = "connecté";
                     } else {
                         $message = "Les informations de connexion ne sont pas correctes";
