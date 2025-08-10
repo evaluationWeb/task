@@ -37,6 +37,7 @@ class TaskController {
                 //Assignation de valeurs à l'objet Task
                 $this->task->setTitle($title);
                 $this->task->setDescription($description);
+                $endDate = new DateTimeImmutable($endDate);
                 $this->task->setEndDate($endDate);
                 $this->task->setStatus(false);
                 $user = new User();

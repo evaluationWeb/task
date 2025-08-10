@@ -14,7 +14,6 @@
     <table>
         <thead>
             <th>Title</th>
-            <th>Description</th>
             <th>Date de fin</th>
             <th>Auteur</th>
             <th>Categories</th>
@@ -25,12 +24,8 @@
         <?php foreach ($tasks as $task): ?>
             <tr>
                 <td><?= $task->getTitle() ?> </td>
-                <!-- version avec id en post avec un bouton -->
                 <td>
-                    <?= $task->getDescription() ?>
-                </td>
-                <td>
-                    <?= $task->getEndDate()->format('d/m/Y H:i:s') ?>
+                    <?= $task->getEndDate()->format('d/m/Y') ?>
                 </td>
                 <td>
                     <?= $task->getUser()->getFirstname() . " " . $task->getUser()->getLastname() ?>
