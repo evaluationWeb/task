@@ -6,7 +6,6 @@ use App\Model\Category;
 use App\Model\User;
 use App\Model\task;
 use App\Utils\Utilitaire;
-use DateTimeImmutable;
 
 class TaskController {
 
@@ -37,7 +36,7 @@ class TaskController {
                 //Assignation de valeurs à l'objet Task
                 $this->task->setTitle($title);
                 $this->task->setDescription($description);
-                $endDate = new DateTimeImmutable($endDate);
+                $endDate = new \DateTimeImmutable($endDate);
                 $this->task->setEndDate($endDate);
                 $this->task->setStatus(false);
                 $user = new User();
@@ -82,7 +81,7 @@ class TaskController {
                 //Assignation de valeurs à l'objet Task
                 $this->task->setTitle($title);
                 $this->task->setDescription($description);
-                $endDate = new DateTimeImmutable($endDate);
+                $endDate = new \DateTimeImmutable($endDate);
                 $this->task->setEndDate($endDate);
                 
                 foreach ($categories as $category) {
