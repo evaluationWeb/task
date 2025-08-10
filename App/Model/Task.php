@@ -357,4 +357,21 @@ class task
             throw new \Exception($e->getMessage());
         }
     }
+
+    /**
+     * Méthode qui valide une Task
+     * @Return void
+     */
+    public function validateTask() {
+        try {
+            $idTask = $this->getIdTask();
+            $request = "UPDATE task set status = 1 WHERE id_task  = ?";
+            $req = $this->connexion->prepare($request);
+            $req->bindParam(1, $idTask, \PDO::PARAM_INT);
+            $req->execute();
+        
+        } catch(\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
 }

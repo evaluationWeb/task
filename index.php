@@ -73,6 +73,9 @@ if ( !isset($_SESSION["connected"])) {
         case "/task/update" :
             $taskController->modifyTask();
             break;
+        case "/task/validate" :
+            $taskController->terminateTask();
+            break;
         default:
             $homeController->error404();
             break;
