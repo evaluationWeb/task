@@ -1,9 +1,11 @@
-<nav class="navbar">
+<nav>
     <ul>
         <!-- Menu commun -->
-        <li><a href="<?= BASE_URL ?>/">Accueil</a></li>
+        <li><strong><a href="<?= BASE_URL ?>/">Accueil</a></strong></li>    
+    </ul>
         <!-- Menu connecté -->
         <?php if (isset($_SESSION["connected"])) :?>
+    <ul>
         <li><a href="<?= BASE_URL ?>/category/all">Liste catégories</a></li>
         <li><a href="<?= BASE_URL ?>/category/add">Ajouter catégorie</a></li>
         <li><a href="<?= BASE_URL ?>/task/all">Liste taches</a></li>

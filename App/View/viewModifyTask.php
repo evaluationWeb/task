@@ -1,4 +1,5 @@
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -6,24 +7,25 @@
     <link rel="stylesheet" href="../public/style/pico.min.css">
     <title>Ajouter une tache</title>
 </head>
+
 <body>
     <?php include "App/View/components/navbar.php"; ?>
-    
+
     <form action="" method="post">
         <h2>Modifier la tache</h2>
         <input type="text" name="title" placeholder="Sasir le titre de la tache" value="<?= $task->getTitle() ?>">
         <textarea name="description" rows="4" cols="50" placeholder="Saisir la description de la tache"><?= $task->getDescription() ?></textarea>
         <label for="endDate">Saisir la date de fin de la tache</label>
-        <input type="datetime-local" name="endDate" value="<?= $task->getEndDate()->format('Y-m-d') . 'T'. $task->getEndDate()->format('H:i')?>">
- 
+        <input type="datetime-local" name="endDate" value="<?= $task->getEndDate()->format('Y-m-d') . 'T' . $task->getEndDate()->format('H:i') ?>">
+
         <label for="categories">Choisir les categories :</label>
         <select multiple="true" name="categories[]">
             <optgroup label="Category">
-                <?php foreach($categories as $category) :?>
-                    <?php if(verifCat($task->getCategories(), $category->getIdCategory())) : ?>
-                    <option value="<?=$category->getIdCategory() ?>" selected><?=$category->getName() ?></option>
+                <?php foreach ($categories as $category) : ?>
+                    <?php if (verifCat($task->getCategories(), $category->getIdCategory())) : ?>
+                        <option value="<?= $category->getIdCategory() ?>" selected><?= $category->getName() ?></option>
                     <?php else : ?>
-                    <option value="<?=$category->getIdCategory() ?>"><?=$category->getName() ?></option>
+                        <option value="<?= $category->getIdCategory() ?>"><?= $category->getName() ?></option>
                     <?php endif ?>
                 <?php endforeach ?>
             </optgroup>
@@ -33,14 +35,16 @@
     </form>
     <p><?= $message ?? "" ?></p>
 </body>
+
 </html>
 <?php
 
 //test si la catégorie est associée à la tache.
-function verifCat($array,$id){
-   
-    foreach($array as $value) {
-        if($value->getIdCategory() == $id) {
+function verifCat($array, $id)
+{
+
+    foreach ($array as $value) {
+        if ($value->getIdCategory() == $id) {
             return true;
         }
     }

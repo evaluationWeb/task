@@ -9,6 +9,5 @@
 <body>
     <?php include "App/View/components/navbar.php"; ?>
     <h2>Bienvenue <?= $name ?> sur notre super site !!</h2>
-    <?= $_SESSION["email"] ?? ""?>
 </body>
 </html>
