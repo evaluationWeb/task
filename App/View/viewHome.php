@@ -3,12 +3,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./public/style/main.css">
-    <link rel="stylesheet" href="../public/style/pico.min.css">
+    <link rel="stylesheet" href="./public/style/pico.min.css">
     <title>Accueil</title>
 </head>
 <body>
     <?php include "App/View/components/navbar.php"; ?>
-    <h1>Bienvenue <?= $name ?> sur notre super site !!</h1>
+    <h2>Bienvenue <?= $name ?> sur notre super site !!</h2>
     <?= $_SESSION["email"] ?? ""?>
 </body>
 </html>

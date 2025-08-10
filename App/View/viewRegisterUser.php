@@ -8,7 +8,9 @@
 </head>
 <body>
     <?php include "App/View/components/navbar.php"; ?>
+    
     <form action="" method="post">
+        <h2>S'inscrire</h2>
         <input type="text" name="firstname" placeholder="saisir le prénom">
         <input type="text" name="lastname" placeholder="saisir le nom">
         <input type="email" name="email" placeholder="saisir le mail">

@@ -70,7 +70,7 @@ class UserController
                         $_SESSION["email"] = $email;
                         $_SESSION["id"] = $userConnected->getIdUser();
 
-                        $message = "connecté";
+                        header('Location: /task');
                     } else {
                         $message = "Les informations de connexion ne sont pas correctes";
                     }

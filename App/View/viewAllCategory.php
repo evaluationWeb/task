@@ -10,7 +10,7 @@
 
 <body>
     <?php include "App/View/components/navbar.php"; ?>
-    <h1>Liste des categories</h1>
+    <h2>Liste des categories</h2>
     <table>
         <thead>
             <th>ID</th>

@@ -8,8 +8,9 @@
 </head>
 <body>
     <?php include "App/View/components/navbar.php"; ?>
-    <h1>Ajouter une catégorie</h1>
+   
     <form action="" method="post">
+        <h2>Ajouter une catégorie</h2>
         <input type="text" name="name" placeholder="Saisir le nom de la categorie">
         <input type="submit" value="Enregistrer" name="submit">
     </form>

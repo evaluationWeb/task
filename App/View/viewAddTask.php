@@ -8,8 +8,9 @@
 </head>
 <body>
     <?php include "App/View/components/navbar.php"; ?>
-    <h1>Ajouter une tache</h1>
+    
     <form action="" method="post">
+        <h2>Ajouter une tache</h2>
         <input type="text" name="title" placeholder="Sasir le titre de la tache">
         <textarea name="description" rows="4" cols="50" placeholder="Sasir la description de la tache"></textarea>
         <label for="endDate">Saisir la date de fin de la tache</label>

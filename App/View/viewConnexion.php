@@ -8,7 +8,9 @@
 </head>
 <body>
     <?php include "App/View/components/navbar.php"; ?>
+    
     <form action="" method="post">
+        <h2>Se connecter</h2>
         <input type="email" name="email" placeholder="saisir le mail">
         <input type="password" name="password" placeholder="saisir le mot de passe">
         <input type="submit" value="connexion" name="submit">
