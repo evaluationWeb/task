@@ -44,7 +44,7 @@ if ( !isset($_SESSION["connected"])) {
             break;
     }
 } else {
-//Test des routes version deconnecté
+//Test des routes version connecté
     switch (substr($path, strlen(BASE_URL))) {
         case "/":
             $homeController->home();
@@ -70,7 +70,9 @@ if ( !isset($_SESSION["connected"])) {
         case "/task/all" :
             $taskController->showAllTask();
             break;
-        
+        case "/task/update" :
+            $taskController->modifyTask();
+            break;
         default:
             $homeController->error404();
             break;

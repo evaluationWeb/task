@@ -18,5 +18,5 @@
         <input type="submit" value="Enregistrer" name="submit">
     </form>
 </body>
-
+<p><?= $message??""?></p>
 </html>

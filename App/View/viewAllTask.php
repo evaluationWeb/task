@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../public/style/main.css">
     <link rel="stylesheet" href="../public/style/pico.min.css">
-    <title>Category</title>
+    <title>Tasks</title>
 </head>
 
 <body>
@@ -13,17 +13,17 @@
     <h2>Liste des taches</h2>
     <table>
         <thead>
-            <th>ID</th>
             <th>Title</th>
             <th>Description</th>
             <th>Date de fin</th>
             <th>Auteur</th>
             <th>Categories</th>
+            <th>Editer</th>
+            <th>Valider</th>
         </thead>
         <!-- Boucler sur le tableau de Category -->
         <?php foreach ($tasks as $task): ?>
             <tr>
-                <td><?= $task->getIdTask() ?> </td>
                 <td><?= $task->getTitle() ?> </td>
                 <!-- version avec id en post avec un bouton -->
                 <td>
@@ -39,6 +39,18 @@
                     <?php foreach($task->getCategories() as $category) : ?>
                         <?= $category->getName() . " "?>
                     <?php endforeach ?>
+                </td>
+                <td>
+                    <form action="/task/task/update" method="post">
+                        <input type="hidden" name="id" value="<?= $task->getIdTask() ?>">
+                        <input type="submit" value="update" name="update">
+                    </form>
+                </td>
+                <td>
+                    <form action="/task/task/validate" method="post">
+                        <input type="hidden" name="id" value="<?= $task->getIdTask() ?>">
+                        <input type="submit" value="valider" name="valider">
+                    </form>
                 </td>
             </tr>
         <?php endforeach ?>
