@@ -88,12 +88,12 @@ class TaskController {
                     $cat = (new Category())->setIdCategory($category);
                     $this->task->addCategory($cat);
                 }
-                $task = $this->task->updateTask($id);
+                $this->task->updateTask($id);
                 
                header('Location: /task/task/all');
 
             } else {
-                $message = "Veuillez remplir tous les champs du formulaire";
+                header('Location: /task/task/all');
             }
             
         }
