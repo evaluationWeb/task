@@ -67,7 +67,7 @@ class task
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    public function setCreatedAt(?\DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
         return $this;
@@ -175,7 +175,7 @@ class task
 
                     //Ajout de la colonne category
                     $colCat = ":idcat" . ($i + 1);
-                    $tabBind[$colCat] = $this->categories[$i]->getIdCategory();
+                    $tabBind[$colCat] = $categories[$i]->getIdCategory();
 
                     //partie requête
                     $requestTaskCategory .= "($colTask, " . $colCat . "),";
@@ -195,5 +195,67 @@ class task
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
+    }
+
+    /**
+     * Recupérer toutes les taches avec leur auteur et les categories associé
+     * @return array Task retourne un tableau de Task
+     */
+    public function findAllTask() : array {
+        try {
+            $request = "SELECT t.id_task AS idTask, t.title, t.description, t.created_at AS createdAt, 
+            t.end_date AS endDate, t.status, t.id_users, u.firstname, u.lastname, 
+            GROUP_CONCAT(c.id_category) AS categoriesId,
+            GROUP_CONCAT(c.name) AS categoriesName
+            FROM task AS t INNER JOIN users AS u            
+            ON t.id_users = u.id_users INNER JOIN task_category AS tc
+            ON t.id_task = tc.id_task INNER JOIN category AS c
+            ON tc.id_category = c.id_category
+            GROUP BY idTask";
+            $req = $this->connexion->prepare($request);
+            $req->execute();
+            $data = $req->fetchAll(\PDO::FETCH_ASSOC);
+            $tasks = [];
+            //hydratation en task obj
+            foreach($data as $taskEntry) {
+                //Hydratation en Task
+                $task = $this->hydrate($taskEntry);
+                //Ajouter à la liste
+                $tasks[] = $task;
+            }
+            return $tasks;
+        } catch(\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    /**
+     * Méthode qui transforme un tableau associatif en Task
+     * @return Task retourne une Task avec toutes les valeurs assignées.
+     */
+    public function hydrate(array $value) : Task {
+        $task = new Task();
+        $task->setIdTask($value["idTask"]);
+        $task->setTitle($value["title"]);
+        $task->setDescription($value["description"]);
+        $createdAt = new \DateTimeImmutable($value["createdAt"]);
+        $endDate = new \DateTimeImmutable($value["endDate"]);
+        $task->setCreatedAt($createdAt);
+        $task->setEndDate($endDate);
+        $user = new User();
+        $user->setIdUser($value["id_users"]);
+        $user->setLastname($value["lastname"]);
+        $user->setFirstname($value["firstname"]);
+        $task->setUser($user);
+        $categoriesId = explode(",",$value["categoriesId"]);
+        $categoriesName = explode(",",$value["categoriesName"]);
+        //Création des category et assignation à la task
+        for ($i = 0; $i< count($categoriesId); $i++) {
+            $category = new Category();
+            $category->setIdCategory($categoriesId[$i]);
+            $category->setName($categoriesName[$i]);
+            $task->addCategory($category);
+        }
+        return $task;
     }
 }

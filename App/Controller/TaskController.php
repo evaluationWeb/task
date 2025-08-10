@@ -27,7 +27,7 @@ class TaskController {
         if( isset($_POST["submit"])) {
             
             if( !empty($_POST["title"]) && !empty($_POST["description"]) && !empty($_POST["endDate"])) {
-                $endDate = new \DateTimeImmutable($_POST["endDate"]);
+                $endDate = $_POST["endDate"];
                 $title = Utilitaire::sanitize($_POST["title"]);
                 $description = Utilitaire::sanitize($_POST["description"]);
                 //récupération des categories
@@ -48,7 +48,7 @@ class TaskController {
                 $task = $this->task->saveTask();
                 
                 $message = "La tache a été ajouté";
-                
+
             } else {
                 $message = "Veuillez remplir tous les champs du formulaire";
             }
@@ -59,6 +59,7 @@ class TaskController {
     }
 
     public function showAllTask() {
-
+        $tasks = $this->task->findAllTask();
+        include_once "App/View/viewAllTask.php";
     }
 }
