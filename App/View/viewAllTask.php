@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../public/style/main.css">
+    <link rel="stylesheet" href="../public/style/pico.min.css">
     <title>Category</title>
 </head>
 
@@ -17,6 +18,7 @@
             <th>Description</th>
             <th>Date de fin</th>
             <th>Auteur</th>
+            <th>Categories</th>
         </thead>
         <!-- Boucler sur le tableau de Category -->
         <?php foreach ($tasks as $task): ?>
@@ -32,6 +34,11 @@
                 </td>
                 <td>
                     <?= $task->getUser()->getFirstname() . " " . $task->getUser()->getLastname() ?>
+                </td>
+                <td>
+                    <?php foreach($task->getCategories() as $category) : ?>
+                        <?= $category->getName() . " "?>
+                    <?php endforeach ?>
                 </td>
             </tr>
         <?php endforeach ?>

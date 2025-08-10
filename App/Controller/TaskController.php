@@ -60,6 +60,7 @@ class TaskController {
 
     public function showAllTask() {
         $tasks = $this->task->findAllTask();
+        //dd($tasks);
         include_once "App/View/viewAllTask.php";
     }
 }

@@ -3,6 +3,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../public/style/main.css">
+    <link rel="stylesheet" href="../public/style/pico.min.css">
     <title>Ajouter une tache</title>
 </head>
 <body>
@@ -10,7 +11,7 @@
     <h1>Ajouter une tache</h1>
     <form action="" method="post">
         <input type="text" name="title" placeholder="Sasir le titre de la tache">
-        <textarea name="description" rows="4" cols="50" placeholder="Sasir le titre de la tache"></textarea>
+        <textarea name="description" rows="4" cols="50" placeholder="Sasir la description de la tache"></textarea>
         <label for="endDate">Saisir la date de fin de la tache</label>
         <input type="datetime-local" name="endDate">
  
