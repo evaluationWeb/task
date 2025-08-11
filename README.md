@@ -1,6 +1,19 @@
 # task
+Ce site est un projet d'exercice de cours d'une TODO List en PHP POO.
+Le repository contient les corrections de celui-ci.
 
-créer à la racine un fichier env.php
+**Prérequis** :
+- PHP 8.2 +,
+- Apache,
+- BDD Mysql ou MariaDB,
+- composer 2.7 +,
+- Framework CSS pico css (*falcultatif*),
+
+Lien de téléchargement de Pico CSS :
+[pico css](https://picocss.com/)
+
+- 1 Cloner le repository.
+- 2 Créer à la racine un fichier **env.php**
 avec une struture similaire :
 ```php
 <?php
@@ -10,9 +23,12 @@ avec une struture similaire :
     const BDD_NAME = "mon nom de BDD";
     const BASE_URL = "/dossier_du_projet"
 ```
-saisir la commande suivante dans un terminal :
+Remplacer par vos propres valeurs (BDD et racine du projet)
+
+- 3 Editer le fichier **.htaccess** et remplacer le chemin par votre dossier racine
+dans **RewriteBase /dossier**
+C'est le dossier racine de votre projet dans **htdocs** ou **www**
+- 4 Saisir la commande suivante dans un terminal :
 ```sh
 composer install
 ```
-éditer le fichier **.htaccess** et remplacer le chemin de vôtre dossier racine
-dans rewrite base /dossier

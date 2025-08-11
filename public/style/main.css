@@ -2,15 +2,24 @@ nav {
 	padding: 10px;
 	background-color: rgb(250, 250, 250);
 }
+
 h2 {
 	text-align: center;
 }
+
 form {
 	width: 50%;
 	margin-left: auto;
 	margin-right: auto;
 	margin-top: 5vh;
 }
-td, th {
+
+td,
+th {
 	text-align: center !important;
+}
+
+li>a,
+li>strong>a {
+	color: rgb(61, 61, 61);
 }
