@@ -19,8 +19,9 @@
             <input type="email" name="email" placeholder="saisir le mail">
             <input type="password" name="password" placeholder="saisir le mot de passe">
             <input type="submit" value="connexion" name="submit">
+            <p class="error"><?= $message ?></p>
         </form>
-        <p><?= $message ?></p>
+        
     </main>
 </body>
 

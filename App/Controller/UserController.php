@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Model\User;
 use App\Utils\Utilitaire;
 
-class UserController 
+class UserController
 {
     private User $user;
 
@@ -14,7 +14,8 @@ class UserController
         $this->user = new User();
     }
 
-    public function addUser() {
+    public function addUser()
+    {
         $message = "";
         //Test si le formulaire est submit
         if (isset($_POST["submit"])) {
@@ -22,7 +23,7 @@ class UserController
 
                 $email = Utilitaire::sanitize($_POST["email"]);
                 $this->user->setEmail($email);
-                
+
                 if (!$this->user->isUserByEmailExist()) {
                     //Sanitize des autres valeur
                     $firstname = Utilitaire::sanitize($_POST["firstname"]);
@@ -36,20 +37,23 @@ class UserController
                     //ajoute le compte en BDD
                     $this->user->saveUser();
                     $message = "Le compte : " . $this->user->getEmail() . " a été ajouté en BDD";
+                    header("Refresh:2; url=/task/user/register");
                 } else {
-                
+
                     $message = "Le compte existe déja";
+                    header("Refresh:2; url=/task/user/register");
                 }
-                
             } else {
-                $message ="Veuillez remplir tous les champs";
+                $message = "Veuillez remplir tous les champs";
+                header("Refresh:2; url=/task/user/register");
             }
         }
-        
+
         include "App/View/viewRegisterUser.php";
     }
 
-    public function connexion() {
+    public function connexion()
+    {
         $message = "";
         if (isset($_POST["submit"])) {
             if (!empty($_POST["email"]) && !empty($_POST["password"])) {
@@ -64,7 +68,7 @@ class UserController
 
                     //test si le password est identique
                     if ($this->user->passwordVerify($userConnected->getPassword())) {
-                        
+
                         //initialiser les super gobale de la SESSION
                         $_SESSION["connected"] = true;
                         $_SESSION["email"] = $email;
@@ -73,20 +77,23 @@ class UserController
                         header('Location: /task');
                     } else {
                         $message = "Les informations de connexion ne sont pas correctes";
+                        header("Refresh:2; url=/task/user/connexion");
                     }
                 } else {
                     $message = "Les informations de connexion ne sont pas correctes";
+                    header("Refresh:2; url=/task/user/connexion");
                 }
             } else {
                 $message = "Veuillez remplir les champs";
+                header("Refresh:2; url=/task/user/connexion");
             }
         }
         include "App/View/viewConnexion.php";
     }
 
-    public function deconnexion() {
+    public function deconnexion()
+    {
         session_destroy();
         header('Location: /task/');
-        
     }
 }

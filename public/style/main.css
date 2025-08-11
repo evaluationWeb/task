@@ -23,3 +23,8 @@ li>a,
 li>strong>a {
 	color: rgb(61, 61, 61);
 }
+.error {
+	color: rgb(233, 48, 48);
+	font-size: 1.2rem;
+	text-align: center;
+}
