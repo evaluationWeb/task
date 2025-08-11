@@ -9,14 +9,19 @@
 </head>
 
 <body>
-    <?php include "App/View/components/navbar.php"; ?>
-    
-    <form action="" method="post">
-        <h2>Editer la catégorie</h2>
-        <input type="text" name="name" placeholder="Saisir le nom de la categorie" value="<?= $cat->GetName() ?>">
-        <input type="hidden" name="id" value="<?= $cat->getIdCategory() ?>">
-        <input type="submit" value="Enregistrer" name="submit">
-    </form>
+    <header class="container-fluid">
+        <?php include "App/View/components/navbar.php"; ?>
+    </header>
+    <main class="container-fluid">
+
+        <form action="" method="post">
+            <h2>Editer la catégorie</h2>
+            <input type="text" name="name" placeholder="Saisir le nom de la categorie" value="<?= $cat->GetName() ?>">
+            <input type="hidden" name="id" value="<?= $cat->getIdCategory() ?>">
+            <input type="submit" value="Enregistrer" name="submit">
+        </form>
+        <p><?= $message ?? "" ?></p>
+    </main>
 </body>
-<p><?= $message??""?></p>
+
 </html>

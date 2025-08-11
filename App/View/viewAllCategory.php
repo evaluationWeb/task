@@ -9,37 +9,42 @@
 </head>
 
 <body>
-    <?php include "App/View/components/navbar.php"; ?>
-    <h2>Liste des categories</h2>
-    <table>
-        <thead>
-            <th>ID</th>
-            <th>NAME</th>
-            <th>Supprimer</th>
-            <th>Editer</th>
-        </thead>
-        <!-- Boucler sur le tableau de Category -->
-        <?php foreach ($categories as $category): ?>
-            <!-- afficher le contenu de l'attribut name (Category) -->
-            <tr>
-                <td><?= $category->getIdCategory() ?> </td>
-                <td><?= $category->getName() ?> </td>
-                <!-- version avec id en post avec un bouton -->
-                <td>
-                    <form action="/task/category/delete" method="post">
-                        <input type="hidden" name="id" value="<?= $category->getIdCategory() ?>">
-                        <input type="submit" value="delete" name="delete">
-                    </form>
-                </td>
-                <td>
-                    <form action="/task/category/update" method="post">
-                        <input type="hidden" name="id" value="<?= $category->getIdCategory() ?>">
-                        <input type="submit" value="update" name="update">
-                    </form>
-                </td>
-            </tr>
-        <?php endforeach ?>
-    </table>
-    <p><?= $message ?></p>
+    <header class="container-fluid">
+        <?php include "App/View/components/navbar.php"; ?>
+    </header>
+    <main class="container-fluid">
+        <h2>Liste des categories</h2>
+        <table class="striped">
+            <thead data-theme="dark">
+                <th>ID</th>
+                <th>NAME</th>
+                <th>Supprimer</th>
+                <th>Editer</th>
+            </thead>
+            <!-- Boucler sur le tableau de Category -->
+            <?php foreach ($categories as $category): ?>
+                <!-- afficher le contenu de l'attribut name (Category) -->
+                <tr>
+                    <td><?= $category->getIdCategory() ?> </td>
+                    <td><?= $category->getName() ?> </td>
+                    <!-- version avec id en post avec un bouton -->
+                    <td>
+                        <form action="/task/category/delete" method="post">
+                            <input type="hidden" name="id" value="<?= $category->getIdCategory() ?>">
+                            <input type="submit" value="delete" name="delete">
+                        </form>
+                    </td>
+                    <td>
+                        <form action="/task/category/update" method="post">
+                            <input type="hidden" name="id" value="<?= $category->getIdCategory() ?>">
+                            <input type="submit" value="update" name="update">
+                        </form>
+                    </td>
+                </tr>
+            <?php endforeach ?>
+        </table>
+        <p><?= $message ?></p>
+    </main>
 </body>
+
 </html>

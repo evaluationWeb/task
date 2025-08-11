@@ -7,7 +7,10 @@
     <title>Inscription</title>
 </head>
 <body>
+    <header class="container-fluid">
     <?php include "App/View/components/navbar.php"; ?>
+    </header>
+    <main class="container-fluid">
     
     <form action="" method="post">
         <h2>S'inscrire</h2>
@@ -18,5 +21,6 @@
         <input type="submit" value="inscription" name="submit">
     </form>
     <p><?= $message ?></p>
+</main>
 </body>
 </html>
