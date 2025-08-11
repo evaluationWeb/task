@@ -21,7 +21,7 @@
             <input type="submit" value="connexion" name="submit">
             <p class="error"><?= $message ?></p>
         </form>
-        
+
     </main>
 </body>
 
