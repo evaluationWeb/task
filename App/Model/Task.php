@@ -198,7 +198,7 @@ class task
     }
 
     /**
-     * Recupérer toutes les taches avec leur auteur et les categories associé
+     * Recupérer toutes les taches avec leur auteur et les categories associées
      * @return array Task retourne un tableau de Task
      */
     public function findAllTask(): array
