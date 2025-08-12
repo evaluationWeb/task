@@ -3,3 +3,5 @@ env.php
 /vendor/
 composer.lock
 /public/image/*.*
+!/public/image/profil.png
+!/public/image/logout.png
