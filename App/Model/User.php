@@ -22,7 +22,6 @@ class User
     public function __construct()
     {
         $this->connexion = (new Bdd())->connectBDD();
-        $this->img = "profil.png";
     }
     
     //Getters et Setters
@@ -93,7 +92,8 @@ class User
             $lastname = $this->lastname;
             $email = $this->email;
             $password = $this->password;
-            $request = "INSERT INTO users(firstname, lastname, email, password) VALUE (?,?,?,?)";
+            $img = $this->img;
+            $request = "INSERT INTO users(firstname, lastname, email, password, img) VALUE (?,?,?,?,?)";
 
             //prépararation de la requête
             $req = $this->connexion->prepare($request);
@@ -102,6 +102,7 @@ class User
             $req->bindParam(2, $lastname, \PDO::PARAM_STR);
             $req->bindParam(3, $email, \PDO::PARAM_STR);
             $req->bindParam(4, $password, \PDO::PARAM_STR);
+            $req->bindParam(5, $img, \PDO::PARAM_STR);
             //éxécution de la requête
             $req->execute();
             //récupération de l'id
@@ -147,7 +148,7 @@ class User
             //Récupération de la valeur de name (category)
             $email = $this->email;
             //Ecrire la requête SQL
-            $request = "SELECT u.id_users AS idUser, u.firstname, u.lastname, u.password FROM users AS u WHERE u.email = ?";
+            $request = "SELECT u.id_users AS idUser, u.firstname, u.lastname, u.password , u.img FROM users AS u WHERE u.email = ?";
             //préparer la requête
             $req = $this->connexion->prepare($request);
             //assigner le paramètre

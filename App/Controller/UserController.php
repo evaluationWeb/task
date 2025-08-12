@@ -29,6 +29,26 @@ class UserController
                     $firstname = Utilitaire::sanitize($_POST["firstname"]);
                     $lastname = Utilitaire::sanitize($_POST["lastname"]);
                     $password = Utilitaire::sanitize($_POST["password"]);
+                    //Test si l'utilisateur à ajouter une image
+                    if( isset($_FILES["img"])) {
+                        
+                        //récupération du chemin temporaire
+                        $tmp = $_FILES["img"]["tmp_name"];
+                        //récupération de nom par défault
+                        $defaultName = $_FILES["img"]["name"];
+                        //récupération du format de l'image
+                        $format = Utilitaire::getFileExtension($defaultName);
+                        //nouveau nom 
+                        $newImgName = $firstname . $lastname . "." . $format;
+                        //enregistrement de l'image
+                        move_uploaded_file($tmp,".." . BASE_URL . "/public/image/" . $newImgName);
+                        //set name de l'image
+                        $this->user->setImg($newImgName);
+                    }
+                    else {
+                        //Set default image
+                        $this->user->setImg("profil.png");
+                    }
                     //Set et hash du mot de passe
                     $this->user->setFirstname($firstname);
                     $this->user->setLastname($lastname);
@@ -73,7 +93,7 @@ class UserController
                         $_SESSION["connected"] = true;
                         $_SESSION["email"] = $email;
                         $_SESSION["id"] = $userConnected->getIdUser();
-
+                        $_SESSION["img"] = $userConnected->getImg();
                         header('Location: /task');
                     } else {
                         $message = "Les informations de connexion ne sont pas correctes";

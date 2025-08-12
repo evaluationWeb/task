@@ -204,6 +204,7 @@ class task
     public function findAllTask(): array
     {
         try {
+            $idUser = $this->getUser()->getIdUser();
             $request = "SELECT t.id_task AS idTask, t.title, t.description, t.created_at AS createdAt, 
             t.end_date AS endDate, t.status, t.id_users, u.firstname, u.lastname, 
             GROUP_CONCAT(c.id_category) AS categoriesId,
@@ -212,8 +213,9 @@ class task
             ON t.id_users = u.id_users INNER JOIN task_category AS tc
             ON t.id_task = tc.id_task INNER JOIN category AS c
             ON tc.id_category = c.id_category
-            WHERE t.status = 0 GROUP BY idTask ";
+            WHERE t.status = 0 AND u.id_users = ? GROUP BY idTask ";
             $req = $this->connexion->prepare($request);
+            $req->bindParam(1,$idUser, \PDO::PARAM_INT );
             $req->execute();
             $data = $req->fetchAll(\PDO::FETCH_ASSOC);
             $tasks = [];

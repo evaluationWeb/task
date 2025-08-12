@@ -14,12 +14,13 @@
     </header>
     <main class="container-fluid">
 
-        <form action="" method="post">
+        <form action="" method="post" enctype="multipart/form-data">
             <h2>S'inscrire</h2>
             <input type="text" name="firstname" placeholder="saisir le prénom">
             <input type="text" name="lastname" placeholder="saisir le nom">
             <input type="email" name="email" placeholder="saisir le mail">
             <input type="password" name="password" placeholder="saisir le password">
+            <input type="file" name="img">
             <input type="submit" value="inscription" name="submit">
             <p class="error"><?= $message ?></p>
         </form>

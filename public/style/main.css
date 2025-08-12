@@ -28,3 +28,7 @@ li>strong>a {
 	font-size: 1.2rem;
 	text-align: center;
 }
+li>a>img {
+	width: 50px;
+	border-radius: 50%;
+}

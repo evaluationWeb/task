@@ -60,6 +60,10 @@ class TaskController {
     }
 
     public function showAllTask() {
+        $idUser = $_SESSION["id"];
+        $user = new User();
+        $user->setIdUser($idUser);
+        $this->task->setUser($user);
         $tasks = $this->task->findAllTask();
         //dd($tasks);
         include_once "App/View/viewAllTask.php";
