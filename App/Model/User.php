@@ -13,6 +13,7 @@ class User
     private string $lastname;
     private string $email;
     private string $password;
+    private ?string $img;
 
     //Bdd
     private \PDO $connexion;
@@ -21,7 +22,9 @@ class User
     public function __construct()
     {
         $this->connexion = (new Bdd())->connectBDD();
+        $this->img = "profil.png";
     }
+    
     //Getters et Setters
     public function getIdUser() : int {
         return $this->idUser;
@@ -62,6 +65,15 @@ class User
     public function setPassword(string $password) : void {
         $this->password = $password;
     }
+
+    public function getImg() : ?string {
+        return $this->img;
+    }
+
+    public function setImg(?string $img) :void {
+        $this->img = $img;
+    }
+
     //méthode pour hash et vérifier le password
     public function hashPassword() : void 
     {

@@ -47,3 +47,7 @@ ALTER TABLE task_category
 ADD CONSTRAINT fk_complete_category
 FOREIGN KEY(id_category)
 REFERENCES category(id_category);
+
+-- ajout de la colonne image du profil
+ALTER TABLE users
+ADD COLUMN img VARCHAR(50);
