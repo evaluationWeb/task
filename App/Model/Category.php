@@ -122,10 +122,14 @@ class Category
     public function deleteCategory(int $id): void
     {
         try {
-            $request = "DELETE FROM category WHERE id_category = ?";
-            $req = $this->connexion->prepare($request);
+            $requestAsso = "DELETE FROM task_category WHERE id_category = ?";
+            $req = $this->connexion->prepare($requestAsso);
             $req->bindParam(1, $id, \PDO::PARAM_INT);
             $req->execute();
+            $request = "DELETE FROM category WHERE id_category = ?";
+            $req2 = $this->connexion->prepare($request);
+            $req2->bindParam(1, $id, \PDO::PARAM_INT);
+            $req2->execute();
         } catch (\Exception $e) {
             throw new CategoryException($e->getMessage());
         }

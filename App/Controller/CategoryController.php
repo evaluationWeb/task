@@ -64,8 +64,8 @@ class CategoryController
 
     public function removeCategory()
     {
-        if (isset($_POST["delete"])) {
-            $id = Utilitaire::sanitize($_POST["id"]);
+        if (isset($_GET["id"])) {
+            $id = Utilitaire::sanitize($_GET["id"]);
             $this->category->deleteCategory($id);
             header('Location: /task/category/all?message=La catégorie a été supprimé');
         }

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../public/style/main.css">
     <link rel="stylesheet" href="../public/style/pico.min.css">
+    <script src="../public/script/main.js"></script>
     <title>Category</title>
 </head>
 
@@ -29,10 +30,9 @@
                     <td><?= $category->getName() ?> </td>
                     <!-- version avec id en post avec un bouton -->
                     <td>
-                        <form action="/task/category/delete" method="post">
-                            <input type="hidden" name="id" value="<?= $category->getIdCategory() ?>">
-                            <input type="submit" value="delete" name="delete">
-                        </form>
+                        <button id="<?= $category->getIdCategory() ?>" data-target="modal-delete" onclick="toggleModal(event, this)">
+                            delete
+                        </button>
                     </td>
                     <td>
                         <form action="/task/category/update" method="post">
@@ -45,6 +45,36 @@
         </table>
         <p><?= $message ?></p>
     </main>
+    <dialog id="modal-delete">
+        <article>
+            <header>
+                <button
+                    aria-label="Close"
+                    rel="prev"
+                    data-target="modal-delete"
+                    onclick="toggleModal(event)"></button>
+                <h3>Confirmer la suppression</h3>
+            </header>
+            <p>
+                Attention La suppression de la catégorie est définitive.<br>
+                Cliquer sur Confirm pour supprimer.<br>
+                Cliquer sur Cancel pour annuler.
+            </p>
+            <footer>
+                <button
+                    role="button"
+                    class="secondary"
+                    data-target="modal-delete"
+                    onclick="toggleModal(event)">
+                    Cancel
+                </button>
+
+                <button id="delete-category">
+                    Confirm
+                </button>
+            </footer>
+        </article>
+    </dialog>
 </body>
 
 </html>
