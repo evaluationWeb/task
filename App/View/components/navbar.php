@@ -10,7 +10,7 @@
         <li><a href="<?= BASE_URL ?>/category/add" data-tooltip="Ajouter une catégorie">Ajouter catégorie</a></li>
         <li><a href="<?= BASE_URL ?>/task/all" data-tooltip="Liste des taches">Liste taches</a></li>
         <li><a href="<?= BASE_URL ?>/task/add"data-tooltip="Ajouter une tache">Ajouter une tache</a></li>
-        <li><a href="<?= BASE_URL ?>/user/profil" data-tooltip="image de profil"><img src="<?= BASE_URL ?>/public/image/<?= $_SESSION["img"] ?>" alt="image de profil"></a></li>
+        <li><a href="<?= BASE_URL ?>/user/profil" data-tooltip="Profil"><img src="<?= BASE_URL ?>/public/image/<?= $_SESSION["img"] ?>" alt="image de profil"></a></li>
         <li><a href="<?= BASE_URL ?>/user/deconnexion" data-tooltip="Déconnexion"><img src="<?= BASE_URL ?>/public/image/logout.png" alt="deconnexion"></a></li>
         <?php else : ?>
         <!-- Menu déconnecté -->

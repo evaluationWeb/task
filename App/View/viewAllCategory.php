@@ -30,14 +30,16 @@
                     <td><?= $category->getName() ?> </td>
                     <!-- version avec id en post avec un bouton -->
                     <td>
-                        <button id="<?= $category->getIdCategory() ?>" data-target="modal-delete" onclick="toggleModal(event, this)">
-                            delete
+                        <button id="<?= $category->getIdCategory() ?>" data-target="modal-delete" data-tooltip="Supprimer la catégorie" onclick="toggleModal(event, this)">
+                            Supprimer
                         </button>
                     </td>
                     <td>
-                        <form action="/task/category/update" method="post">
+                        <form action="/task/category/update" method="post" >
                             <input type="hidden" name="id" value="<?= $category->getIdCategory() ?>">
-                            <input type="submit" value="update" name="update">
+                            <button type="submit"  name="update" data-tooltip="Editer la catégorie">
+                               Mise à jour
+                            </button>
                         </form>
                     </td>
                 </tr>
@@ -56,9 +58,7 @@
                 <h3>Confirmer la suppression</h3>
             </header>
             <p>
-                Attention La suppression de la catégorie est définitive.<br>
-                Cliquer sur Confirm pour supprimer.<br>
-                Cliquer sur Cancel pour annuler.
+                Attention La suppression de la catégorie est définitive.
             </p>
             <footer>
                 <button
