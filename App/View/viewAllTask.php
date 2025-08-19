@@ -41,13 +41,17 @@
                     <td>
                         <form action="/task/task/update" method="post">
                             <input type="hidden" name="id" value="<?= $task->getIdTask() ?>">
-                            <input type="submit" value="update" name="update">
+                            <button type="submit" name="update" data-tooltip="Editer la tache">
+                                Mise à jour
+                            </button>
                         </form>
                     </td>
                     <td>
                         <form action="/task/task/validate" method="post">
                             <input type="hidden" name="id" value="<?= $task->getIdTask() ?>">
-                            <input type="submit" value="valider" name="valider">
+                            <button type="submit" name="valider" data-tooltip="Valider la tache">
+                                Valider
+                            </button>
                         </form>
                     </td>
                 </tr>
