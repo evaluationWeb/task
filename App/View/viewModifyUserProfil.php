@@ -13,12 +13,37 @@
         <?php include "App/View/components/navbar.php"; ?>
     </header>
     <main class="container-fluid">
+        <p class="error"><?= $message ?? "" ?></p>
         <form action="" method="post" enctype="multipart/form-data">
-            <h2>Mettre à jour l'image de profil :</h2>
-            <input type="file" name="img">
+            <h2>Editer les informations du profil :</h2>
+            <fieldset>
+                <label>
+                Prénom :
+                <input
+                    type="text"
+                    name="firstname"
+                    value="<?= $oldUserInfo->getFirstname() ?? "" ?>"
+                />
+                </label>
+                <label>
+                Nom :
+                <input
+                    type="text"
+                    name="lastname"
+                    value="<?= $oldUserInfo->getLastname() ?? "" ?>"
+                />
+                </label>
+                
+                <label>
+                Email :
+                <input
+                    type="email"
+                    name="email"
+                    value="<?= $oldUserInfo->getEmail() ?? ""?>"
+                />
+                </label>
+            </fieldset>
             <input type="submit" value="Modifier" name="submit">
-            <!-- Affichage des erreurs ou résultat -->
-            <p class="error"><?= $message ?? "" ?></p>
         </form>
     </main>
 </body>

@@ -225,6 +225,46 @@ class UserController
     }
 
     public function modifyInfo() {
+        //Test si le formulaire est submit
+        if (isset($_POST["submit"])) {
+            $this->user->setEmail(Utilitaire::sanitize($_SESSION["email"]));
+            $oldUserInfo = $this->user->findUserByEmail();
+            //Test si les champs sont remplis
+            if (!empty($_POST["firstname"]) && !empty($_POST["firstname"]) && !empty($_POST["firstname"])) {
+                //récupération et nettoyage des informations
+                $firstname = Utilitaire::sanitize($_POST["firstname"]);
+                $lastname = Utilitaire::sanitize($_POST["lastname"]);
+                $email = Utilitaire::sanitize($_POST["email"]);
+                $oldEmail = Utilitaire::sanitize($_SESSION["email"]);
+                //set de l'email
+                $this->user->setEmail($email);
+                //test si l'email n'existe pas déja
+                if ($email != $oldEmail && $this->user->isUserByEmailExist()) {
+                    $message = "Attention l'email existe déja en BDD";
+                    header("Refresh:1; url=/task/user/profil");
+                } else {
+                    //set du prénon et du nom
+                    $this->user->setFirstname($firstname);
+                    $this->user->setLastname($lastname);
+                    //Mise à jour du compte
+                    $this->user->updateInformation($oldEmail);
+                    //Mise à jour de la session
+                    $_SESSION["email"] = $this->user->getEmail();
+                    $oldUserInfo = $this->user->findUserByEmail();
+                    //Message de confirmation et redirection
+                    $message = "Le compte a été mis à jour";
+                    header("Refresh:1; url=/task/user/profil"); 
+                }
+            } else {
+                $message = "Veuillez renseigner tous les champs";
+                header("Refresh:1; url=/task/user/update/info"); 
+            }
+        } else {
+            //Récupération des anciennes valeurs
+            $this->user->setEmail(Utilitaire::sanitize($_SESSION["email"]));
+            $oldUserInfo = $this->user->findUserByEmail();
+        }
+
         include_once "App/View/viewModifyUserProfil.php";
     }
 }

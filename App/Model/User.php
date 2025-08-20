@@ -225,4 +225,26 @@ class User
         }
     }
 
+    /**
+     * Méthode qui met à jour les informations du profil
+     * @return void
+     */
+    public function updateInformation(string $oldEmail)
+    {
+        try {
+            $email = $this->email;
+            $firstname = $this->firstname;
+            $lastname = $this->lastname;
+            $oldEmail = $oldEmail;
+            $request = "UPDATE users SET firstname = ?, lastname = ?, email = ? WHERE email = ?";
+            $req = $this->connexion->prepare($request);
+            $req->bindParam(1, $firstname, \PDO::PARAM_STR);
+            $req->bindParam(2, $lastname, \PDO::PARAM_STR);
+            $req->bindParam(3, $email, \PDO::PARAM_STR);
+            $req->bindParam(4, $oldEmail, \PDO::PARAM_STR);
+            $req->execute();
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
 }
