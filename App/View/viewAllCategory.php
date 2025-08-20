@@ -38,7 +38,7 @@
                         <form action="/task/category/update" method="post" >
                             <input type="hidden" name="id" value="<?= $category->getIdCategory() ?>">
                             <button type="submit"  name="update" data-tooltip="Editer la catégorie">
-                               Mise à jour
+                               Editer
                             </button>
                         </form>
                     </td>
