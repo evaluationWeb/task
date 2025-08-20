@@ -205,4 +205,24 @@ class User
             throw new \Exception($e->getMessage());
         }
     }
+
+    /**
+     * Méthode qui met à jour l'image de profil
+     * @return void
+     */
+    public function updateImage()
+    {
+        try {
+            $email = $this->email;
+            $img = $this->img;
+            $request = "UPDATE users SET img = ? WHERE email = ?";
+            $req = $this->connexion->prepare($request);
+            $req->bindParam(1, $img, \PDO::PARAM_STR);
+            $req->bindParam(2, $email, \PDO::PARAM_STR);
+            $req->execute();
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
 }

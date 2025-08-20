@@ -68,7 +68,7 @@ class UserController
             }
         }
 
-        include "App/View/viewRegisterUser.php";
+        include_once "App/View/viewRegisterUser.php";
     }
 
     public function connexion()
@@ -107,7 +107,7 @@ class UserController
                 header("Refresh:2; url=/task/user/connexion");
             }
         }
-        include "App/View/viewConnexion.php";
+        include_once "App/View/viewConnexion.php";
     }
 
     public function deconnexion()
@@ -128,7 +128,7 @@ class UserController
         $userConnected = $this->user->findUserByEmail();
 
         //Retourne la vue HTML
-        include "App/View/viewUserProfil.php";
+        include_once "App/View/viewUserProfil.php";
     }
 
     public function modifyPassword()
@@ -179,14 +179,52 @@ class UserController
                 header("Refresh:2; url=/task/user/update/password");
             }
         }
-        include "App/View/viewModifyPassword.php";
+        include_once "App/View/viewModifyPassword.php";
     }
 
-    public function modifyImage() {
+    public function modifyImage()
+    {
         //test si le formulaire est soumis
         if (isset($_POST["submit"])) {
-
+            //test si l'image existe
+            if (!empty($_FILES["img"]["tmp_name"])) {
+                //récupération du chemin temporaire
+                $tmp = $_FILES["img"]["tmp_name"];
+                //récupération de nom par défault
+                $defaultName = $_FILES["img"]["name"];
+                //récupération du format de l'image
+                $format = Utilitaire::getFileExtension($defaultName);
+                //set de l'email
+                $this->user->setEmail(Utilitaire::sanitize($_SESSION["email"]));
+                //récupération des informations de l'utilisateur
+                $userConnected = $this->user->findUserByEmail();
+                $newImgName = $userConnected->getFirstname() . $userConnected->getLastname() . "." . $format;
+                //enregistrement de l'image
+                move_uploaded_file($tmp, ".." . BASE_URL . "/public/image/" . $newImgName);
+                
+                //Mise à jour du profil si c'est l'image par défault 
+                if ($_SESSION["img"] === "profil.png") {
+                    //set de l'image
+                    $this->user->setImg($newImgName);
+                    //update du compte en BDD
+                    $this->user->updateImage();
+                    //mise à jour de la session
+                    $_SESSION["img"] = $newImgName;
+                }
+                
+                //message de confirmation et redirection
+                $message = "Image mise à jour";
+                header("Refresh:2; url=/task/user/profil"); 
+            } else {
+                $message = "Veuillez sélectionner une image";
+                header("Refresh:2; url=/task/user/update/img"); 
+            }
         }
-        include "App/View/viewModifyImage.php";
+
+        include_once "App/View/viewModifyImage.php";
+    }
+
+    public function modifyInfo() {
+        include_once "App/View/viewModifyUserProfil.php";
     }
 }

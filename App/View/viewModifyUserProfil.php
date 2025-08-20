@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../public/style/main.css">
     <link rel="stylesheet" href="../../public/style/pico.min.css">
-    <title>Remplacer image profil</title>
+    <title>Editer les informations du compte</title>
 </head>
 
 <body>

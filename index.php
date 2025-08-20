@@ -85,6 +85,9 @@ if (!isset($_SESSION["connected"])) {
         case "/user/update/img" :
             $userController->modifyImage();
             break;
+        case "/user/update/info" :
+            $userController->modifyInfo();
+            break;
         default:
             $homeController->error404();
             break;
