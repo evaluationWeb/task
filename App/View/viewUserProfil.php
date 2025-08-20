@@ -16,10 +16,10 @@
     <main class="container-fluid">
     <article>
         <h2> Profil utilisateur</h2>
-        <p>Nom : </p>
-        <p>Prénom : </p>
-        <p>Email : </p>
-        <a href="/user/update/password"></a><button>Changer le mot de passe</button>
+        <p>Nom : <?= $userConnected->getLastname()?></p>
+        <p>Prénom : <?= $userConnected->getFirstname()?></p>
+        <p>Email : <?= $userConnected->getEmail()?></p>
+        <a href="<?= BASE_URL ?>/user/update/password"><button>Changer le mot de passe</button></a>
     </article>    
     
     </main>

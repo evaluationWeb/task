@@ -84,7 +84,10 @@ class User
         return password_verify($this->password, $hash);
     }
     //Méthodes (Requête SQL)
-
+    /**
+     * Méthode pour ajouter un User en BDD
+     * @return User retourne un Objet User qui correspond à l'enregistrement
+     */
     public function saveUser() : User {
         try {
             //Récupération des données de l'utilisateur
@@ -109,13 +112,17 @@ class User
             $id = $this->connexion->lastInsertId('users');
             //set id et retourner l'utilisateur
             $this->idUser = $id;
+            //Retourne l'Objet User
             return $this;
         } catch(\Exception $e) {
             throw new \Exception($e->getMessage());
         }
     }
 
-
+    /**
+     * Méthode qui vérifie si un compte existe en BDD
+     * @return bool true si existe / false si n'existe pas
+     */
     public function isUserByEmailExist(): bool
     {
         try {
@@ -141,14 +148,17 @@ class User
         }
     }
 
-
+    /**
+     * Méthode qui retourne un objet User ou null
+     * @return User retourne on objet User depuis l'email assigné à l'objet
+     */
     public function findUserByEmail(): User
     {
         try {
             //Récupération de la valeur de name (category)
             $email = $this->email;
             //Ecrire la requête SQL
-            $request = "SELECT u.id_users AS idUser, u.firstname, u.lastname, u.password , u.img FROM users AS u WHERE u.email = ?";
+            $request = "SELECT u.id_users AS idUser, u.firstname, u.lastname, u.password , u.img, u.email FROM users AS u WHERE u.email = ?";
             //préparer la requête
             $req = $this->connexion->prepare($request);
             //assigner le paramètre

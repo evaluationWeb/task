@@ -116,4 +116,18 @@ class UserController
         session_destroy();
         header('Location: /task/');
     }
+
+    public function showUserProfile() {
+        //Récupération et nettoyage de la super globale session
+        $email = Utilitaire::sanitize($_SESSION["email"]);
+        
+        //setter l'email à l'objet User
+        $this->user->setEmail($email);
+
+        //Récupération du compte 
+        $userConnected = $this->user->findUserByEmail();
+
+        //Retourne la vue HTML
+        include "App/View/viewUserProfil.php";
+    }
 }

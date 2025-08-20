@@ -24,7 +24,7 @@ $categoryController = new CategoryController();
 $userController = new UserController();
 $taskController = new TaskController();
 
-if ( !isset($_SESSION["connected"])) {
+if (!isset($_SESSION["connected"])) {
     //Test des routes version deconnecté
     switch (substr($path, strlen(BASE_URL))) {
         case "/":
@@ -44,7 +44,7 @@ if ( !isset($_SESSION["connected"])) {
             break;
     }
 } else {
-//Test des routes version connecté
+    //Test des routes version connecté
     switch (substr($path, strlen(BASE_URL))) {
         case "/":
             $homeController->home();
@@ -55,36 +55,32 @@ if ( !isset($_SESSION["connected"])) {
         case "/user/deconnexion":
             $userController->deconnexion();
             break;
-        case "/category/delete" :
+        case "/category/delete":
             $categoryController->removeCategory();
             break;
-        case "/category/update" :
+        case "/category/update":
             $categoryController->modifyCategory();
             break;
-        case "/category/add" :
+        case "/category/add":
             $categoryController->addCategory();
             break;
-        case "/task/add" :
+        case "/task/add":
             $taskController->addTask();
             break;
-        case "/task/all" :
+        case "/task/all":
             $taskController->showAllTask();
             break;
-        case "/task/update" :
+        case "/task/update":
             $taskController->modifyTask();
             break;
-        case "/task/validate" :
+        case "/task/validate":
             $taskController->terminateTask();
             break;
         case "/user/profil":
-            include "App/View/viewUserProfil.php";
+            $userController->showUserProfile();
             break;
         default:
             $homeController->error404();
             break;
     }
 }
-
-
-
-
