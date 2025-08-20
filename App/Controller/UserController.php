@@ -30,7 +30,7 @@ class UserController
                     $lastname = Utilitaire::sanitize($_POST["lastname"]);
                     $password = Utilitaire::sanitize($_POST["password"]);
                     //Test si l'utilisateur à ajouter une image
-                    if( isset($_FILES["img"])) {
+                    if( !empty($_FILES["img"]["tmp_name"])) {
                         
                         //récupération du chemin temporaire
                         $tmp = $_FILES["img"]["tmp_name"];
