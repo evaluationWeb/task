@@ -32,3 +32,11 @@ li>a>img {
 	width: 4.5vw;
 	border-radius: 50%;
 }
+.group {
+	display: flex;
+	justify-content:flex-end;
+	a {
+		margin-left: 1vw;
+		margin-right: 1vw
+	}
+}

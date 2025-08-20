@@ -5,7 +5,7 @@ namespace App\Model;
 use App\Utils\Bdd;
 
 
-class User 
+class User
 {
     //Attributs
     private int $idUser;
@@ -23,63 +23,75 @@ class User
     {
         $this->connexion = (new Bdd())->connectBDD();
     }
-    
+
     //Getters et Setters
-    public function getIdUser() : int {
+    public function getIdUser(): int
+    {
         return $this->idUser;
     }
 
-    public function setIdUser(int $id) : void {
+    public function setIdUser(int $id): void
+    {
         $this->idUser = $id;
     }
 
-    public function getFirstname() : string {
+    public function getFirstname(): string
+    {
         return $this->firstname;
     }
 
-    public function setFirstname(string $firstname) : void {
+    public function setFirstname(string $firstname): void
+    {
         $this->firstname = $firstname;
     }
 
-    public function getLastname() : string {
+    public function getLastname(): string
+    {
         return $this->lastname;
     }
 
-    public function setLastname(string $lastname) : void {
+    public function setLastname(string $lastname): void
+    {
         $this->lastname = $lastname;
     }
 
-    public function getEmail() : string {
+    public function getEmail(): string
+    {
         return $this->email;
     }
 
-    public function setEmail(string $email) : void {
+    public function setEmail(string $email): void
+    {
         $this->email = $email;
     }
 
-    public function getPassword() : string {
+    public function getPassword(): string
+    {
         return $this->password;
     }
 
-    public function setPassword(string $password) : void {
+    public function setPassword(string $password): void
+    {
         $this->password = $password;
     }
 
-    public function getImg() : ?string {
+    public function getImg(): ?string
+    {
         return $this->img;
     }
 
-    public function setImg(?string $img) :void {
+    public function setImg(?string $img): void
+    {
         $this->img = $img;
     }
 
     //méthode pour hash et vérifier le password
-    public function hashPassword() : void 
+    public function hashPassword(): void
     {
         $this->password = password_hash($this->password, PASSWORD_DEFAULT);
     }
 
-    public function passwordVerify(string $hash) : bool 
+    public function passwordVerify(string $hash): bool
     {
         return password_verify($this->password, $hash);
     }
@@ -88,7 +100,8 @@ class User
      * Méthode pour ajouter un User en BDD
      * @return User retourne un Objet User qui correspond à l'enregistrement
      */
-    public function saveUser() : User {
+    public function saveUser(): User
+    {
         try {
             //Récupération des données de l'utilisateur
             $firstname = $this->firstname;
@@ -114,7 +127,7 @@ class User
             $this->idUser = $id;
             //Retourne l'Objet User
             return $this;
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
     }
@@ -165,11 +178,29 @@ class User
             $req->bindParam(1, $email, \PDO::PARAM_STR);
             //exécuter la requête
             $req->execute();
-            
+
             $req->setFetchMode(\PDO::FETCH_CLASS, User::class);
             //récupérer le resultat
             return $req->fetch();
-            
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    /**
+     * Méthode qui met à jour le mot de passe du compte en BDD
+     * @return void
+     */
+    public function updatePassword()
+    {
+        try {
+            $email = $this->email;
+            $password = $this->password;
+            $request = "UPDATE users SET password = ? WHERE email = ?";
+            $req = $this->connexion->prepare($request);
+            $req->bindParam(1, $password, \PDO::PARAM_STR);
+            $req->bindParam(2, $email, \PDO::PARAM_STR);
+            $req->execute();
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }

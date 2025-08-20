@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="../public/style/main.css">
     <link rel="stylesheet" href="../public/style/pico.min.css">
     <script src="../public/script/main.js"></script>
-    <title>Category</title>
+    <title>Profil</title>
 </head>
 
 <body>
@@ -19,9 +19,12 @@
         <p>Nom : <?= $userConnected->getLastname()?></p>
         <p>Prénom : <?= $userConnected->getFirstname()?></p>
         <p>Email : <?= $userConnected->getEmail()?></p>
-        <a href="<?= BASE_URL ?>/user/update/password"><button>Changer le mot de passe</button></a>
+        <div class="group">
+            <a href="<?= BASE_URL ?>/user/update/password" ><button data-tooltip="Changer le mot de passe">Changer le mot de passe</button></a>
+            <a href="<?= BASE_URL ?>/user/update/img" ><button data-tooltip="Changer l'image de profil">Remplacer l'image de profil</button></a>
+        </div> 
     </article>    
-    
+         
     </main>
 </body>
 

@@ -30,8 +30,8 @@ class UserController
                     $lastname = Utilitaire::sanitize($_POST["lastname"]);
                     $password = Utilitaire::sanitize($_POST["password"]);
                     //Test si l'utilisateur à ajouter une image
-                    if( !empty($_FILES["img"]["tmp_name"])) {
-                        
+                    if (!empty($_FILES["img"]["tmp_name"])) {
+
                         //récupération du chemin temporaire
                         $tmp = $_FILES["img"]["tmp_name"];
                         //récupération de nom par défault
@@ -41,11 +41,10 @@ class UserController
                         //nouveau nom 
                         $newImgName = $firstname . $lastname . "." . $format;
                         //enregistrement de l'image
-                        move_uploaded_file($tmp,".." . BASE_URL . "/public/image/" . $newImgName);
+                        move_uploaded_file($tmp, ".." . BASE_URL . "/public/image/" . $newImgName);
                         //set name de l'image
                         $this->user->setImg($newImgName);
-                    }
-                    else {
+                    } else {
                         //Set default image
                         $this->user->setImg("profil.png");
                     }
@@ -117,10 +116,11 @@ class UserController
         header('Location: /task/');
     }
 
-    public function showUserProfile() {
+    public function showUserProfile()
+    {
         //Récupération et nettoyage de la super globale session
         $email = Utilitaire::sanitize($_SESSION["email"]);
-        
+
         //setter l'email à l'objet User
         $this->user->setEmail($email);
 
@@ -129,5 +129,64 @@ class UserController
 
         //Retourne la vue HTML
         include "App/View/viewUserProfil.php";
+    }
+
+    public function modifyPassword()
+    {
+        //Test si le formulaire est soumis
+        if (isset($_POST["submit"])) {
+            //Test si tous les champs sont remplis
+            if (!empty($_POST["oldPassword"]) && !empty($_POST["newPassword"]) && !empty($_POST["confirmPassword"])) {
+                //récupération et nettoyage des informations
+                $oldPassword = Utilitaire::sanitize($_POST["oldPassword"]);
+                $newPassword = Utilitaire::sanitize($_POST["newPassword"]);
+                $confirmPassword = Utilitaire::sanitize($_POST["confirmPassword"]);
+                $email = Utilitaire::sanitize($_SESSION["email"]);
+                //Test si les 2 nouveaux mots de passe sont identiques
+                if ($newPassword === $confirmPassword) {
+                    //set de l'email
+                    $this->user->setEmail($email);
+                    //Test si le compte existe
+                    if ($this->user->isUserByEmailExist()) {
+                        //récupération du compte depuis son email
+                        $oldUser = $this->user->findUserByEmail();
+                        //récupération de l'ancien hash
+                        $oldHash = $oldUser->getPassword();
+                        //test si l'ancien mot de passe est valide
+                        if (password_verify($oldPassword, $oldHash)) {
+                            //set du nouveau mot de passe
+                            $this->user->setPassword($newPassword);
+                            //Hash du nouveau mot de passe
+                            $this->user->hashPassword();
+                            //mise à jour du mot de passe
+                            $this->user->updatePassword();
+                            $message = "Le mot de passe à été mis à jour";
+                            header("Refresh:2; url=/task/user/deconnexion");
+                        } else {
+                            $message = "L'ancien mot de passe est incorrect";
+                            header("Refresh:2; url=/task/user/update/password");
+                        }
+                    } else {
+                        $message = "Le compte n'existe pas";
+                        header("Refresh:2; url=/task/user/deconnexion");
+                    }
+                } else {
+                    $message = "Les 2 nouveaux mots de passe ne correspondent pas";
+                    header("Refresh:2; url=/task/user/update/password");
+                }
+            } else {
+                $message = "Veuillez remplir tous les champs du formulaire";
+                header("Refresh:2; url=/task/user/update/password");
+            }
+        }
+        include "App/View/viewModifyPassword.php";
+    }
+
+    public function modifyImage() {
+        //test si le formulaire est soumis
+        if (isset($_POST["submit"])) {
+
+        }
+        include "App/View/viewModifyImage.php";
     }
 }
