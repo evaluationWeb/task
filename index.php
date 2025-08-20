@@ -76,6 +76,9 @@ if ( !isset($_SESSION["connected"])) {
         case "/task/validate" :
             $taskController->terminateTask();
             break;
+        case "/user/update/password":
+            include "App/View/viewUserProfil.php";
+            break;
         default:
             $homeController->error404();
             break;
