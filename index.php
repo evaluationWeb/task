@@ -42,6 +42,12 @@ if (!isset($_SESSION["connected"])) {
         case "/test/email" :
             $homeController->testEmail();
             break;
+        case "/user/password/recover" :
+            $userController->recoverPassword();
+            break;
+        case "/user/password/generate" :
+            $userController->regeneratePassword();
+            break;
         default:
             $homeController->error404();
             break;

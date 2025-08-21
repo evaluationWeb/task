@@ -58,7 +58,7 @@ class EmailService
     private function config()
     {
         //Server settings
-        $this->mail->SMTPDebug = SMTP::DEBUG_SERVER; //SMTP::DEBUG_OFF pour désactiver les logs
+        $this->mail->SMTPDebug = SMTP::DEBUG_OFF; //SMTP::DEBUG_SERVER pour activer le debug SMTP::DEBUG_OFF pour désactiver les logs
         $this->mail->isSMTP();
         $this->mail->Host       = SMTP_SERVER;
         $this->mail->SMTPAuth   = true;

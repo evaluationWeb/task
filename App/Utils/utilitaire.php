@@ -25,15 +25,14 @@ class Utilitaire {
         return substr(strrchr($file,'.'),1);
     }
 
-    //Méthode qui deshydrate l'objet User en tableau
-    public static function toArray(Category $category) :array {
-        $data = [];
-        foreach ($category as $key => $value) {
-            $method = 'get' . ucfirst($key);
-            if (method_exists($category, $method)) {
-                $user[$key] = $category->$method();
-            }
-        }
-        return $data;         
+    //Méthode qui convertie une chaine de caractéres en UTF-8
+    public static function utf8Encode(string $str): string
+    {
+
+        return mb_convert_encoding(
+            $str,
+            "UTF-8",
+            mb_detect_encoding($str)
+        );
     }
 }

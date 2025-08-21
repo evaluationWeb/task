@@ -247,4 +247,52 @@ class User
             throw new \Exception($e->getMessage());
         }
     }
+
+    /**
+     * Méthode qui vérifie si un compte existe en BDD 
+     * par un email hash en MD5
+     * @return bool true si existe / false si n'existe pas
+     */
+    public function isUserByHashEmailExist() : bool {
+        try {
+            //Récupération de la valeur de name (category)
+            $email = $this->email;
+            //Ecrire la requête SQL
+            $request = "SELECT u.id_users FROM users AS u WHERE md5(u.email) = ?";
+            //préparer la requête
+            $req = $this->connexion->prepare($request);
+            //assigner le paramètre
+            $req->bindParam(1, $email, \PDO::PARAM_STR);
+            //exécuter la requête
+            $req->execute();
+            //récupérer le resultat
+            $data = $req->fetch(\PDO::FETCH_ASSOC);
+            //Test si l'enrgistrement est vide
+            if (empty($data)) {
+                return false;
+            }
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Méthode qui remplace le mot de passe du compte dont le hash de l'email en MD5 est correct
+     * @return void
+     */
+    public function updateForgotPassword()
+    {
+        try {
+            $email = $this->email;
+            $password = $this->password;
+            $request = "UPDATE users SET password = ? WHERE md5(email) = ?";
+            $req = $this->connexion->prepare($request);
+            $req->bindParam(1, $password, \PDO::PARAM_STR);
+            $req->bindParam(2, $email, \PDO::PARAM_STR);
+            $req->execute();
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
 }

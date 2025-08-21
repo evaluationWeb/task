@@ -239,10 +239,10 @@ class UserController
                 $_SESSION["img"] = $newImgName;
                 //message de confirmation et redirection
                 $message = "Image mise à jour";
-                header("Refresh:1; url=/task/user/profil"); 
+                header("Refresh:1; url=/task/user/profil");
             } else {
                 $message = "Veuillez sélectionner une image";
-                header("Refresh:2; url=/task/user/update/img"); 
+                header("Refresh:2; url=/task/user/update/img");
             }
         }
 
@@ -254,7 +254,8 @@ class UserController
      * @return void affiche et gére la page de modification des informations du profil 
      * de l'utilisateur connecté
      */
-    public function modifyInfo() {
+    public function modifyInfo()
+    {
         //Test si le formulaire est submit
         if (isset($_POST["submit"])) {
             $this->user->setEmail(Utilitaire::sanitize($_SESSION["email"]));
@@ -284,11 +285,11 @@ class UserController
                     $oldUserInfo = $this->user->findUserByEmail();
                     //Message de confirmation et redirection
                     $message = "Le compte a été mis à jour";
-                    header("Refresh:1; url=/task/user/profil"); 
+                    header("Refresh:1; url=/task/user/profil");
                 }
             } else {
                 $message = "Veuillez renseigner tous les champs";
-                header("Refresh:1; url=/task/user/update/info"); 
+                header("Refresh:1; url=/task/user/update/info");
             }
         } else {
             //Récupération des anciennes valeurs
@@ -297,5 +298,98 @@ class UserController
         }
 
         include_once "App/View/viewModifyUserProfil.php";
+    }
+
+    /**
+     * Méthode qui permet la demande de régénération du mot de passe oublié
+     * @return void affiche et gére la page de demande de régénération du mot de passe oublié
+     * Envoi un email pour récupérer le mot de passe 
+     */
+    public function recoverPassword()
+    {
+        //Test si le fomulaire est soumis
+        if (isset($_POST["submit"])) {
+            //Test si l'email est renseigné
+            if (!empty($_POST["email"])) {
+                //Nettoyage du champ
+                $email = Utilitaire::sanitize($_POST["email"]);
+                //Timestamp pour la durée de vie du lien
+                $date = new \DateTimeImmutable();
+                $dateValidity = $date->getTimestamp();
+                //composants de l'email à envoyer
+                $receiver = $email;
+                $subject = "Recuperation du password";
+                $body = "<p>Cliquer sur le lien pour re creer votre mot de passe</p>
+                    <a href='http://localhost" . BASE_URL . "/user/password/generate?email="
+                    . md5($email) . "&validity=" . $dateValidity . "'>
+                        Re creer votre mot de passe
+                    </a>
+                    <p>Attention le lien est valide que pendant 2H00 !</p>";
+                //envoi de l'email
+                $this->emailService->sendMail($receiver, $subject, $body);
+                $message = "envoi d'un email pour re créer votre mot de passe";
+                header("Refresh:2; url=" . BASE_URL . "");
+            }
+        }
+        include_once "App/View/viewRecoverPassword.php";
+    }
+
+    /**
+     * Méthode qui va régénérer votre mot de passe oublié
+     * @return void affiche et gére la page qui permet de re créer un mot de passe oublié
+     */
+    public function regeneratePassword()
+    {
+        //test si les paramètres GET existent
+        if (isset($_GET["email"]) && isset($_GET["validity"])) {
+            //Nettoyage du hash de l'email (GET)
+            $hashEmail = Utilitaire::sanitize($_GET["email"]);
+            //Nettoyage de la date de validitée (GET)
+            $dateValidity = (int) Utilitaire::sanitize($_GET["validity"]);
+            //test si le formulaire est submit
+            if (isset($_POST["submit"])) {
+                //test si les champs sont tous renseignés
+                if (!empty($_POST["newPassword"]) && !empty($_POST["confirmPassword"])) {
+                    //Créer un objet DateTimeImmutable depuis le timestamp $dateValidity
+                    $dateValidity = (new \DateTimeImmutable())->setTimestamp($dateValidity);
+                    //Ajouter 24h
+                    $dateValidityPlus2Hours = $dateValidity->modify('+2 hours');
+                    //test si la date est toujours valide (- de 2h00)
+                    if (new \DateTimeImmutable() < $dateValidityPlus2Hours) {
+                        //set de l'email en MD5 au User
+                        $this->user->setEmail($hashEmail);
+                        //test si l'email est valide
+                        if ($this->user->isUserByHashEmailExist()) {
+                            //récupération et nettoyage du password
+                            $newPassword = Utilitaire::sanitize($_POST["newPassword"]);
+                            //set du password au User
+                            $this->user->setPassword($newPassword);
+                            //hash du password
+                            $this->user->hashPassword();
+                            //Mise à jour du mot de passe
+                            $this->user->updateForgotPassword();
+                            //Message de confirmation et redirection
+                            $message = "Le mot de passe à été modifié";
+                            header("Refresh:2; url=" . BASE_URL . "/user/connexion");  
+                        } 
+                        //Sinon on arrête
+                        else {
+                            $message = "L'email n'est pas valide";
+                            header("Refresh:2; url=" . BASE_URL . "");        
+                        }
+                    } 
+                    //Sinon la date est dépassée
+                    else {
+                        $message = "Le temps est dépassé refaire la demande";
+                        header("Refresh:2; url=" . BASE_URL . "");
+                    }
+                }
+            }
+        }
+        //Sinon redirige vers l'accueil
+        else {
+            header("Location:" . BASE_URL . "");
+        }
+        include_once "App/View/viewRegeneratePassword.php";
     }
 }
