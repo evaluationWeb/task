@@ -2,6 +2,8 @@
 
 namespace App\Utils;
 
+use App\Model\Category;
+
 class Utilitaire {
 
     /**
@@ -21,5 +23,17 @@ class Utilitaire {
      */
     public static function getFileExtension($file){
         return substr(strrchr($file,'.'),1);
+    }
+
+    //Méthode qui deshydrate l'objet User en tableau
+    public static function toArray(Category $category) :array {
+        $data = [];
+        foreach ($category as $key => $value) {
+            $method = 'get' . ucfirst($key);
+            if (method_exists($category, $method)) {
+                $user[$key] = $category->$method();
+            }
+        }
+        return $data;         
     }
 }

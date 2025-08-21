@@ -32,3 +32,18 @@ C'est le dossier racine de votre projet dans **htdocs** ou **www**
 ```sh
 composer install
 ```
+- 5 Mise en place de l'envoi d'email
+
+Saisir la commande suivante pour télécharger la librairie (si elle n'est pas déja installée)
+```sh
+composer require phpmailer/phpmailer
+```
+
+- 6 Editer la configuration du projet (env.php) comme ci-dessous :
+```php
+    const SMTP_SERVER = "url du serveur smtp";
+    const SMTP_PORT = "numéro port du serveur smtp";
+    const SMTP_SECURITY = "Sécurité SMTP par ex :  tls ou ssl";
+    const SMTP_LOGIN = "login du compte email";
+    const SMTP_PASSWORD = "password du compte email";
+```
