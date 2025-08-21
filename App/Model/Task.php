@@ -210,7 +210,7 @@ class task
             GROUP_CONCAT(c.id_category) AS categoriesId,
             GROUP_CONCAT(c.name) AS categoriesName
             FROM task AS t INNER JOIN users AS u            
-            ON t.id_users = u.id_users INNER JOIN task_category AS tc
+            ON t.id_users = u.id_users LEFT JOIN task_category AS tc
             ON t.id_task = tc.id_task INNER JOIN category AS c
             ON tc.id_category = c.id_category
             WHERE t.status = 0 AND u.id_users = ? GROUP BY idTask ";

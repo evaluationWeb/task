@@ -39,7 +39,7 @@ class UserController
                         //récupération du format de l'image
                         $format = Utilitaire::getFileExtension($defaultName);
                         //nouveau nom 
-                        $newImgName = $firstname . $lastname . "." . $format;
+                        $newImgName = uniqid("user") . $firstname . $lastname . "." . $format;
                         //enregistrement de l'image
                         move_uploaded_file($tmp, ".." . BASE_URL . "/public/image/" . $newImgName);
                         //set name de l'image
@@ -198,23 +198,18 @@ class UserController
                 $this->user->setEmail(Utilitaire::sanitize($_SESSION["email"]));
                 //récupération des informations de l'utilisateur
                 $userConnected = $this->user->findUserByEmail();
-                $newImgName = $userConnected->getFirstname() . $userConnected->getLastname() . "." . $format;
+                $newImgName = uniqid("user") . $userConnected->getFirstname() . $userConnected->getLastname() . "." . $format;
                 //enregistrement de l'image
                 move_uploaded_file($tmp, ".." . BASE_URL . "/public/image/" . $newImgName);
-                
-                //Mise à jour du profil si c'est l'image par défault 
-                if ($_SESSION["img"] === "profil.png") {
-                    //set de l'image
-                    $this->user->setImg($newImgName);
-                    //update du compte en BDD
-                    $this->user->updateImage();
-                    //mise à jour de la session
-                    $_SESSION["img"] = $newImgName;
-                }
-                
+                //set de l'image
+                $this->user->setImg($newImgName);
+                //update du compte en BDD
+                $this->user->updateImage();
+                //mise à jour de la session
+                $_SESSION["img"] = $newImgName;
                 //message de confirmation et redirection
                 $message = "Image mise à jour";
-                header("Refresh:2; url=/task/user/profil"); 
+                header("Refresh:1; url=/task/user/profil"); 
             } else {
                 $message = "Veuillez sélectionner une image";
                 header("Refresh:2; url=/task/user/update/img"); 
@@ -230,7 +225,7 @@ class UserController
             $this->user->setEmail(Utilitaire::sanitize($_SESSION["email"]));
             $oldUserInfo = $this->user->findUserByEmail();
             //Test si les champs sont remplis
-            if (!empty($_POST["firstname"]) && !empty($_POST["firstname"]) && !empty($_POST["firstname"])) {
+            if (!empty($_POST["firstname"]) && !empty($_POST["firstname"]) && !empty($_POST["lastname"])) {
                 //récupération et nettoyage des informations
                 $firstname = Utilitaire::sanitize($_POST["firstname"]);
                 $lastname = Utilitaire::sanitize($_POST["lastname"]);
@@ -240,6 +235,7 @@ class UserController
                 $this->user->setEmail($email);
                 //test si l'email n'existe pas déja
                 if ($email != $oldEmail && $this->user->isUserByEmailExist()) {
+
                     $message = "Attention l'email existe déja en BDD";
                     header("Refresh:1; url=/task/user/profil");
                 } else {
