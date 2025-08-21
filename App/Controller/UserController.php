@@ -3,17 +3,25 @@
 namespace App\Controller;
 
 use App\Model\User;
+use App\Service\EmailService;
 use App\Utils\Utilitaire;
 
 class UserController
 {
     private User $user;
 
+    private readonly EmailService $emailService;
+
     public function __construct()
     {
         $this->user = new User();
+        $this->emailService = new EmailService();
     }
 
+    /**
+     * Méthode qui gére l'ajout d'un nouvel utilisateur en BDD
+     * @return void affiche et gére la page d'inscription
+     */
     public function addUser()
     {
         $message = "";
@@ -71,6 +79,10 @@ class UserController
         include_once "App/View/viewRegisterUser.php";
     }
 
+    /**
+     * Méthode qui gére la connexion d'un utilisateur
+     * @return void affiche et gére la page de connexion
+     */
     public function connexion()
     {
         $message = "";
@@ -110,12 +122,20 @@ class UserController
         include_once "App/View/viewConnexion.php";
     }
 
+    /**
+     * Méthode qui déconnecte un utilisateur (coupe la session)
+     * @return void déconnecte et retourne à la page d'accueil
+     */
     public function deconnexion()
     {
         session_destroy();
         header('Location: /task/');
     }
 
+    /**
+     * Méthode qui affiche les informations de profil de l'utilisateur connecté
+     * @return void affiche et gére la page de profil de l'utilisateur connecté
+     */
     public function showUserProfile()
     {
         //Récupération et nettoyage de la super globale session
@@ -131,6 +151,11 @@ class UserController
         include_once "App/View/viewUserProfil.php";
     }
 
+    /**
+     * Méthode qui permet le changement du mot de passe de l'utilisateur connecté
+     * @return void affiche et gére la page de changement du mot de passe 
+     * de l'utilisateur connecté
+     */
     public function modifyPassword()
     {
         //Test si le formulaire est soumis
@@ -182,6 +207,11 @@ class UserController
         include_once "App/View/viewModifyPassword.php";
     }
 
+    /**
+     * Méthode qui permet le remplacement de l'image de profil de l'utilisateur connecté
+     * @return void affiche et gére la page de remplacement de l'image de profil 
+     * de l'utilisateur connecté
+     */
     public function modifyImage()
     {
         //test si le formulaire est soumis
@@ -219,6 +249,11 @@ class UserController
         include_once "App/View/viewModifyImage.php";
     }
 
+    /**
+     * Méthode qui permet la modification des informations du profil utilisateur connecté
+     * @return void affiche et gére la page de modification des informations du profil 
+     * de l'utilisateur connecté
+     */
     public function modifyInfo() {
         //Test si le formulaire est submit
         if (isset($_POST["submit"])) {
