@@ -42,8 +42,25 @@ composer require phpmailer/phpmailer
 - 6 Editer la configuration du projet (env.php) comme ci-dessous :
 ```php
     const SMTP_SERVER = "url du serveur smtp";
-    const SMTP_PORT = "numéro port du serveur smtp";
+    const SMTP_PORT = "numéro de port du serveur smtp";
     const SMTP_SECURITY = "Sécurité SMTP par ex :  tls ou ssl";
     const SMTP_LOGIN = "login du compte email";
     const SMTP_PASSWORD = "password du compte email";
+```
+- 7 si votre configuration est correcte vous pouvez tester l'envoi d'un email avec : 
+
+La route suivante : 
+
+http://localhost/dossier_de_votre_projet/test/email
+
+```txt
+Elle va envoyer un email à votre boite (config SMTP)
+Vous pourez voir les logs de l'envoi du mail 
+de la configuration de :
+
+$this->mail->SMTPDebug = SMTP::DEBUG_SERVER;
+Dans la méthode config du service
+
+Si vous voulez désactiver les logs passer la valeur à :
+SMTP::DEBUG_OFF
 ```

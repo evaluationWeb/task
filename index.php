@@ -39,6 +39,9 @@ if (!isset($_SESSION["connected"])) {
         case "/user/register":
             $userController->addUser();
             break;
+        case "/test/email" :
+            $homeController->testEmail();
+            break;
         default:
             $homeController->error404();
             break;
@@ -87,6 +90,9 @@ if (!isset($_SESSION["connected"])) {
             break;
         case "/user/update/info" :
             $userController->modifyInfo();
+            break;
+        case "/test/email" :
+            $homeController->testEmail();
             break;
         default:
             $homeController->error404();
