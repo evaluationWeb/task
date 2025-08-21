@@ -41,12 +41,15 @@ composer require phpmailer/phpmailer
 
 - 6 Editer la configuration du projet (env.php) comme ci-dessous :
 ```php
-    const SMTP_SERVER = "url du serveur smtp";
-    const SMTP_PORT = "numéro de port du serveur smtp";
-    const SMTP_SECURITY = "Sécurité SMTP par ex :  tls ou ssl";
+    const SMTP_SERVER = "url du serveur SMTP";
+    const SMTP_PORT = "numéro de port du serveur SMTP par ex :485 ou 587";
+    const SMTP_SECURITY = "Sécurité SMTP du serveur par ex :  tls ou ssl";
     const SMTP_LOGIN = "login du compte email";
     const SMTP_PASSWORD = "password du compte email";
 ```
+
+**NB** : Faites des recherches pour la configuration adaptée à votre **service de messagerie Email**.
+
 - 7 si votre configuration est correcte vous pouvez tester l'envoi d'un email avec : 
 
 La route suivante : 
