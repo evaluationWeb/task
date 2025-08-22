@@ -67,3 +67,16 @@ Dans la méthode config du service
 Si vous voulez désactiver les logs passer la valeur à :
 SMTP::DEBUG_OFF
 ```
+- 8 **Update du système de routing** avec les classes **Router / Route**
+
+- 9 Créer une nouvelle route dans **index.php**
+
+Exemple :
+```php
+//le constructeur prend les paramètres suivants :
+//1 le chemin de la route (après http://localhost/dossier_projet)
+//2 la méthode HTTP (GET pour affichage, POST récupération des données d'un formulaire)
+//3 Le nom du controller (sans Controller à la fin : Home pour HomeController dans l'exemple)
+//4 le nom de la méthode du controller (sans les parenthéses home pour home() dans l'exemple)
+$router->addRoute(new Route('/', 'GET', 'Home', 'home'));
+```
