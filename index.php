@@ -1,5 +1,4 @@
 <?php
-
 //importer les ressources
 include "./env.php";
 
@@ -12,96 +11,81 @@ $path = $url['path'] ??  '/';
 
 session_start();
 
-//import des classes controller
+/*--------------------------
+---------Token JWT----------
+--------------------------*/
+$bearer = isset($_SERVER['HTTP_AUTHORIZATION']) ? preg_replace(
+    '/Bearer\s+/',
+    '',
+    $_SERVER['HTTP_AUTHORIZATION']
+) : null;
+
+/*--------------------------
+--------Bloc Router---------
+--------------------------*/
+
+//importer les classes du router
+use App\Router\Router;
+use App\Router\Route;
+
+
+//inport et instance de HomeController
 use App\Controller\HomeController;
-use App\Controller\CategoryController;
-use App\Controller\UserController;
-use App\Controller\TaskController;
-
-//Instance des controller
 $homeController = new HomeController();
-$categoryController = new CategoryController();
-$userController = new UserController();
-$taskController = new TaskController();
 
+//Instance du Router
+$router = new Router(substr($path, strlen(BASE_URL)), $bearer);
+
+/*--------------------------
+-----Ajout des routes-------
+--------------------------*/
+
+/* Bloc routes communes */
+$router->addRoute(new Route('/', 'GET', 'Home', 'home'));
+$router->addRoute(new Route('/test/email', 'GET', 'Home', 'testEmail'));
+$router->addRoute(new Route('/test/email', 'POST', 'Home', 'testEmail'));
+
+/* Bloc routes déconnectées */
 if (!isset($_SESSION["connected"])) {
-    //Test des routes version deconnecté
-    switch (substr($path, strlen(BASE_URL))) {
-        case "/":
-            $homeController->home();
-            break;
-        case "/category/all":
-            $categoryController->showAllCategory();
-            break;
-        case "/user/connexion":
-            $userController->connexion();
-            break;
-        case "/user/register":
-            $userController->addUser();
-            break;
-        case "/test/email" :
-            $homeController->testEmail();
-            break;
-        case "/user/password/recover" :
-            $userController->recoverPassword();
-            break;
-        case "/user/password/generate" :
-            $userController->regeneratePassword();
-            break;
-        default:
-            $homeController->error404();
-            break;
-    }
-} else {
-    //Test des routes version connecté
-    switch (substr($path, strlen(BASE_URL))) {
-        case "/":
-            $homeController->home();
-            break;
-        case "/category/all":
-            $categoryController->showAllCategory();
-            break;
-        case "/user/deconnexion":
-            $userController->deconnexion();
-            break;
-        case "/category/delete":
-            $categoryController->removeCategory();
-            break;
-        case "/category/update":
-            $categoryController->modifyCategory();
-            break;
-        case "/category/add":
-            $categoryController->addCategory();
-            break;
-        case "/task/add":
-            $taskController->addTask();
-            break;
-        case "/task/all":
-            $taskController->showAllTask();
-            break;
-        case "/task/update":
-            $taskController->modifyTask();
-            break;
-        case "/task/validate":
-            $taskController->terminateTask();
-            break;
-        case "/user/profil":
-            $userController->showUserProfile();
-            break;
-        case "/user/update/password" :
-            $userController->modifyPassword();
-            break;
-        case "/user/update/img" :
-            $userController->modifyImage();
-            break;
-        case "/user/update/info" :
-            $userController->modifyInfo();
-            break;
-        case "/test/email" :
-            $homeController->testEmail();
-            break;
-        default:
-            $homeController->error404();
-            break;
-    }
+    $router->addRoute(new Route('/user/connexion', 'GET', 'User', 'connexion'));
+    $router->addRoute(new Route('/user/connexion', 'POST', 'User', 'connexion'));
+    $router->addRoute(new Route('/user/register', 'GET', 'User', 'addUser'));
+    $router->addRoute(new Route('/user/register', 'POST', 'User', 'addUser'));
+    $router->addRoute(new Route('/user/password/recover', 'GET', 'User', 'recoverPassword'));
+    $router->addRoute(new Route('/user/password/recover', 'POST', 'User', 'recoverPassword'));
+    $router->addRoute(new Route('/user/password/generate', 'GET', 'User', 'regeneratePassword'));
+    $router->addRoute(new Route('/user/password/generate', 'POST', 'User', 'regeneratePassword'));
+}
+
+/* Bloc routes connectées */
+if (isset($_SESSION["connected"])) {
+    $router->addRoute(new Route('/user/deconnexion', 'GET', 'User', 'deconnexion'));
+    $router->addRoute(new Route('/category/all', 'GET', 'Category', 'showAllCategory'));
+    $router->addRoute(new Route('/category/delete', 'GET', 'Category', 'removeCategory'));
+    $router->addRoute(new Route('/category/update', 'GET', 'Category', 'modifyCategory'));
+    $router->addRoute(new Route('/category/update', 'POST', 'Category', 'modifyCategory'));
+    $router->addRoute(new Route('/category/add', 'GET', 'Category', 'addCategory'));
+    $router->addRoute(new Route('/category/add', 'POST', 'Category', 'addCategory'));
+    $router->addRoute(new Route('/task/add', 'GET', 'Task', 'addTask'));
+    $router->addRoute(new Route('/task/add', 'POST', 'Task', 'addTask'));
+    $router->addRoute(new Route('/task/all', 'GET', 'Task', 'showAllTask'));
+    $router->addRoute(new Route('/task/update', 'GET', 'Task', 'modifyTask'));
+    $router->addRoute(new Route('/task/update', 'POST', 'Task', 'modifyTask'));
+    $router->addRoute(new Route('/task/validate', 'GET', 'Task', 'terminateTask'));
+    $router->addRoute(new Route('/task/validate', 'POST', 'Task', 'terminateTask'));
+    $router->addRoute(new Route('/user/profil', 'GET', 'User', 'showUserProfile'));
+    $router->addRoute(new Route('/user/update/password', 'GET', 'User', 'modifyPassword'));
+    $router->addRoute(new Route('/user/update/password', 'POST', 'User', 'modifyPassword'));
+    $router->addRoute(new Route('/user/update/img', 'GET', 'User', 'modifyImage'));
+    $router->addRoute(new Route('/user/update/img', 'POST', 'User', 'modifyImage'));
+    $router->addRoute(new Route('/user/update/info', 'GET', 'User', 'modifyInfo'));
+    $router->addRoute(new Route('/user/update/info', 'POST', 'User', 'modifyInfo'));
+}
+
+//Démarrage du Router
+try {
+    $router->run();
+} catch (\App\Router\RouterException $e) {
+    //affiche la page 404
+    $homeController->error404();
 }
