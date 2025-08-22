@@ -316,15 +316,18 @@ class UserController
                 //Timestamp pour la durée de vie du lien
                 $date = new \DateTimeImmutable();
                 $dateValidity = $date->getTimestamp();
+                $hashEmail = md5($email);
+                $link = "http://localhost" . BASE_URL . "/user/password/generate?email=$hashEmail&validity=$dateValidity";
                 //composants de l'email à envoyer
                 $receiver = $email;
                 $subject = "Recuperation du password";
-                $body = "<p>Cliquer sur le lien pour re creer votre mot de passe</p>
-                    <a href='http://localhost" . BASE_URL . "/user/password/generate?email="
-                    . md5($email) . "&validity=" . $dateValidity . "'>
+                $body = <<<HTML
+                    <p>Cliquer sur le lien pour re creer votre mot de passe</p>
+                    <a href='$link'>
                         Re creer votre mot de passe
                     </a>
-                    <p>Attention le lien est valide que pendant 2H00 !</p>";
+                    <p>Attention le lien est valide pendant 2H00 !</p>
+                    HTML;
                 //envoi de l'email
                 $this->emailService->sendMail($receiver, $subject, $body);
                 $message = "envoi d'un email pour re créer votre mot de passe";
