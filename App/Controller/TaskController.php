@@ -120,4 +120,13 @@ class TaskController {
         }
         header('Location: /task/task/all');
     }
+
+    public function showAllTaskHydrate() {
+        $idUser = $_SESSION["id"];
+        $user = new User();
+        $user->setIdUser($idUser);
+        $this->task->setUser($user);
+        $tasks = $this->task->findAllTaskHydrate();
+        dd($tasks);
+    }
 }

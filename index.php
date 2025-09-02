@@ -80,6 +80,7 @@ if (isset($_SESSION["connected"])) {
     $router->addRoute(new Route('/user/update/img', 'POST', 'User', 'modifyImage'));
     $router->addRoute(new Route('/user/update/info', 'GET', 'User', 'modifyInfo'));
     $router->addRoute(new Route('/user/update/info', 'POST', 'User', 'modifyInfo'));
+    $router->addRoute(new Route('/tasks', 'GET', 'Task', 'showAllTaskHydrate'));
 }
 
 //Démarrage du Router
