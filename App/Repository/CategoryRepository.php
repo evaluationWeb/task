@@ -27,7 +27,7 @@ class CategoryRepository
         try {
             //Récupération de la valeur de name (category)
             $name = $category->getName();
-            //Stocker la requête dans une variable
+            //Ecrire la requête SQL
             $request = "INSERT INTO category(name) VALUES (?)";
             //1 préparer la requête
             $req = $this->connection->prepare($request);
@@ -52,6 +52,7 @@ class CategoryRepository
     public function findAllCategory(): array
     {
         try {
+            //Ecrire la requête SQL
             $request = "SELECT c.id_category AS idCategory , c.name FROM category AS c";
             $req = $this->connection->prepare($request);
             $req->execute();
@@ -108,6 +109,30 @@ class CategoryRepository
             $req2 = $this->connection->prepare($request);
             $req2->bindParam(1, $id, \PDO::PARAM_INT);
             $req2->execute();
+        } catch (\Exception $e) {
+            throw new CategoryException($e->getMessage());
+        }
+    }
+
+    /**
+     * Méthode qui retourne une Category depuis son ID
+     * @param int $id ID de la category en BDD
+     * @return Category|null retourne une Category si elle existe
+     */
+    public function findCategory(int $id): null | Category
+    {
+        try {
+            //Ecrire la requête SQL
+            $request = "SELECT c.id_category AS idCategory, c.name FROM category AS c WHERE c.id_category = ?";
+            //préparer la requête
+            $req = $this->connection->prepare($request);
+            //assigner le paramètre
+            $req->bindParam(1, $id, \PDO::PARAM_INT);
+            //exécuter la requête
+            $req->execute();
+            $req->setFetchMode(\PDO::FETCH_CLASS, Category::class);
+            //récupérer le resultat
+            return $req->fetch();
         } catch (\Exception $e) {
             throw new CategoryException($e->getMessage());
         }
