@@ -137,4 +137,30 @@ class CategoryRepository
             throw new CategoryException($e->getMessage());
         }
     }
+
+    /**
+     * Méthode qui retourne une Category depuis son name
+     * @param Category Objet Category
+     * @return Category | stdClass | null retourne une Category si elle existe
+     */
+    public function findCategoryByName(Category $category): null | Category
+    {
+        try {
+            //Récupération du name
+            $name = $category->getName();
+            //Ecrire la requête SQL
+            $request = "SELECT c.id_category AS idCategory, c.name FROM category AS c WHERE c.name = ?";
+            //préparer la requête
+            $req = $this->connection->prepare($request);
+            //assigner le paramètre
+            $req->bindParam(1, $name, \PDO::PARAM_STR);
+            //exécuter la requête
+            $req->execute();
+            $req->setFetchMode(\PDO::FETCH_CLASS, Category::class);
+            //récupérer le resultat
+            return $req->fetch();
+        } catch (\Exception $e) {
+            throw new CategoryException($e->getMessage());
+        }
+    }
 }
