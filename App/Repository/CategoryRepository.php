@@ -61,7 +61,7 @@ class CategoryRepository
         }
     }
 
-        /**
+    /**
      * Méthode qui retourne true si la category existe en BDD
      * @param Category $category 
      * @return bool true si existe / false si n'existe pas
@@ -88,6 +88,28 @@ class CategoryRepository
             return true;
         } catch (\Exception $e) {
             return false;
+        }
+    }
+
+    /**
+     * Méthodes qui supprime une category en BDD
+     * @param int $id id de la catgeory à supprimer
+     */
+    public function deleteCategory(int $id): void
+    {
+        try {
+            //Suppression de la category dans la table d'association task_category
+            $requestAsso = "DELETE FROM task_category WHERE id_category = ?";
+            $req = $this->connection->prepare($requestAsso);
+            $req->bindParam(1, $id, \PDO::PARAM_INT);
+            $req->execute();
+            //Suppression de la category par son id_category
+            $request = "DELETE FROM category WHERE id_category = ?";
+            $req2 = $this->connection->prepare($request);
+            $req2->bindParam(1, $id, \PDO::PARAM_INT);
+            $req2->execute();
+        } catch (\Exception $e) {
+            throw new CategoryException($e->getMessage());
         }
     }
 }
