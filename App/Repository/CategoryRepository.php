@@ -163,4 +163,32 @@ class CategoryRepository
             throw new CategoryException($e->getMessage());
         }
     }
+
+    /**
+     * Méthode qui met à jour un enregistrement Category en BDD
+     * requête de MAJ insert
+     * @var Category $category  
+     * @return void
+     */
+    public function updateCategory(Category $category): void {
+        try {
+            //Récupération de la valeur de name (category)
+            $name = $category->getName();
+            //Récupération de la valeur de l'id (category)
+            $id = $category->getIdCategory();
+            //Stocker la requête dans une variable
+            $request = "UPDATE category set name = ? WHERE id_category = ?";
+            //1 préparer la requête
+            $req = $this->connection->prepare($request);
+            //2 Bind les paramètres
+            $req->bindParam(1, $name, \PDO::PARAM_STR);
+            $req->bindParam(2, $id, \PDO::PARAM_INT);
+            //3 executer la requête
+            $req->execute();
+         
+            //Capture des erreurs 
+        } catch (\Exception $e) {
+            throw new CategoryException($e->getMessage());
+        }
+    }
 }
