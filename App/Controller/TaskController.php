@@ -86,29 +86,29 @@ class TaskController {
                 $categories = $_POST["categories"];
 
                 //Assignation de valeurs à l'objet Task
-                $this->task->setTitle($title);
-                $this->task->setDescription($description);
+                $task = new task();
+                $task->setTitle($title);
+                $task->setDescription($description);
                 $endDate = new \DateTimeImmutable($endDate);
-                $this->task->setEndDate($endDate);
+                $task->setEndDate($endDate);
                 
                 foreach ($categories as $category) {
                     $cat = (new Category())->setIdCategory($category);
-                    $this->task->addCategory($cat);
+                    $task->addCategory($cat);
                 }
-                $this->task->updateTask($id);
+                $this->taskRepository->updateTask($task,$id);
                 
                header('Location: /task/task/all');
 
             } else {
                 header('Location: /task/task/all');
             }
-            
         }
         else{
             //sanitize de l'id 
             $id = Utilitaire::sanitize($_POST["id"]);
             //récupération de la précédente valeur de la catégorie
-            $task = $this->task->findTaskById($id);
+            $task = $this->taskRepository->findTaskById($id);
            
         }
         include_once "App/View/viewModifyTask.php";

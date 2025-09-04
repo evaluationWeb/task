@@ -165,7 +165,6 @@ class TaskRepository
      * @param int $id 
      * @return void
      */
-
     public function updateTask(Task $task,int $id): void
     {
         try {
@@ -223,6 +222,34 @@ class TaskRepository
                 //Exécution de la requête
                 $req2->execute($tabBind);
             }
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    /**
+     * Méthode qui récupére un tache par son id
+     * @param int $id
+     * @return Task task
+     */
+    public function findTaskById(int $id): ?Task
+    {
+        try {
+            $request = "SELECT t.id_task AS idTask, t.title, t.description, t.created_at AS createdAt, 
+            t.end_date AS endDate, t.status, 
+            GROUP_CONCAT(c.id_category) AS categoriesId,
+            GROUP_CONCAT(c.name) AS categoriesName
+            FROM task AS t INNER JOIN task_category AS tc
+            ON t.id_task = tc.id_task INNER JOIN category AS c
+            ON tc.id_category = c.id_category
+            WHERE t.id_task = ? GROUP BY idTask ";
+            $req = $this->connection->prepare($request);
+            $req->bindParam(1, $id, \PDO::PARAM_INT);
+            $req->execute();
+            $data = $req->fetch(\PDO::FETCH_ASSOC);
+            //Hydratation en Task
+            $task = $this->hydrate($data);
+            return $task;
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
