@@ -264,8 +264,9 @@ class UserController
     {
         //Test si le formulaire est submit
         if (isset($_POST["submit"])) {
-            $this->user->setEmail(Utilitaire::sanitize($_SESSION["email"]));
-            $oldUserInfo = $this->user->findUserByEmail();
+            $user = new User();
+            $user->setEmail(Utilitaire::sanitize($_SESSION["email"]));
+            $oldUserInfo = $this->userRepository->findUserByEmail($user);
             //Test si les champs sont remplis
             if (!empty($_POST["firstname"]) && !empty($_POST["firstname"]) && !empty($_POST["lastname"])) {
                 //récupération et nettoyage des informations
@@ -274,21 +275,21 @@ class UserController
                 $email = Utilitaire::sanitize($_POST["email"]);
                 $oldEmail = Utilitaire::sanitize($_SESSION["email"]);
                 //set de l'email
-                $this->user->setEmail($email);
+                $user->setEmail($email);
                 //test si l'email n'existe pas déja
-                if ($email != $oldEmail && $this->user->isUserByEmailExist()) {
+                if ($email != $oldEmail && $this->userRepository->isUserByEmailExist($user)) {
 
                     $message = "Attention l'email existe déja en BDD";
                     header("Refresh:1; url=/task/user/profil");
                 } else {
                     //set du prénon et du nom
-                    $this->user->setFirstname($firstname);
-                    $this->user->setLastname($lastname);
+                    $user->setFirstname($firstname);
+                    $user->setLastname($lastname);
                     //Mise à jour du compte
-                    $this->user->updateInformation($oldEmail);
+                    $this->userRepository->updateInformation($user, $oldEmail);
                     //Mise à jour de la session
-                    $_SESSION["email"] = $this->user->getEmail();
-                    $oldUserInfo = $this->user->findUserByEmail();
+                    $_SESSION["email"] = $user->getEmail();
+                    $oldUserInfo = $this->userRepository->findUserByEmail($user);
                     //Message de confirmation et redirection
                     $message = "Le compte a été mis à jour";
                     header("Refresh:1; url=/task/user/profil");
@@ -298,9 +299,10 @@ class UserController
                 header("Refresh:1; url=/task/user/update/info");
             }
         } else {
+            $user = new User();
             //Récupération des anciennes valeurs
-            $this->user->setEmail(Utilitaire::sanitize($_SESSION["email"]));
-            $oldUserInfo = $this->user->findUserByEmail();
+            $user->setEmail(Utilitaire::sanitize($_SESSION["email"]));
+            $oldUserInfo = $this->userRepository->findUserByEmail($user);
         }
 
         include_once "App/View/viewModifyUserProfil.php";
