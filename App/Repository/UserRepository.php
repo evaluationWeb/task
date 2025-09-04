@@ -54,6 +54,7 @@ class UserRepository
 
     /**
      * Méthode qui vérifie si un compte existe en BDD
+     * @param User Objet User
      * @return bool true si existe / false si n'existe pas
      */
     public function isUserByEmailExist(User $user): bool
@@ -81,5 +82,30 @@ class UserRepository
         }
     }
 
-    
+    /**
+     * Méthode qui retourne un objet User ou null
+     * @param User Objet User
+     * @return User retourne on objet User depuis l'email assigné à l'objet
+     */
+    public function findUserByEmail(User $user): User
+    {
+        try {
+            //Récupération de la valeur de name (category)
+            $email = $user->getEmail();
+            //Ecrire la requête SQL
+            $request = "SELECT u.id_users AS idUser, u.firstname, u.lastname, u.password , u.img, u.email FROM users AS u WHERE u.email = ?";
+            //préparer la requête
+            $req = $this->connection->prepare($request);
+            //assigner le paramètre
+            $req->bindParam(1, $email, \PDO::PARAM_STR);
+            //exécuter la requête
+            $req->execute();
+
+            $req->setFetchMode(\PDO::FETCH_CLASS, User::class);
+            //récupérer le resultat
+            return $req->fetch();
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
 }
