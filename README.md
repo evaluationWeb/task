@@ -83,7 +83,7 @@ SMTP::DEBUG_OFF
 
 **Mise à jour majeure** :
 
-Ajout d'un Système des droits sur les routes
+Ajout d'un Système de gestion des droits sur les routes
 
 Exemple :
 ```php
