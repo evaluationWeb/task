@@ -44,10 +44,10 @@ $router->addRoute(new Route('/user/password/generate', 'POST', 'User', 'regenera
 /* Bloc routes connectées */
 
 $router->addRoute(new Route('/user/deconnexion', 'GET', 'User', 'deconnexion', ["ROLE_USER", "ROLE_ADMIN"]));
-$router->addRoute(new Route('/category/all', 'GET', 'Category', 'showAllCategory', ["ROLE_USER", "ROLE_ADMIN"]));
-$router->addRoute(new Route('/category/delete', 'GET', 'Category', 'removeCategory', ["ROLE_USER","ROLE_ADMIN"]));
-$router->addRoute(new Route('/category/update', 'GET', 'Category', 'modifyCategory', ["ROLE_USER","ROLE_ADMIN"]));
-$router->addRoute(new Route('/category/update', 'POST', 'Category', 'modifyCategory', ["ROLE_USER","ROLE_ADMIN"]));
+$router->addRoute(new Route('/category/all', 'GET', 'Category', 'showAllCategory', ["ROLE_USER","ROLE_ADMIN"]));
+$router->addRoute(new Route('/category/delete', 'GET', 'Category', 'removeCategory', ["ROLE_ADMIN"]));
+$router->addRoute(new Route('/category/update', 'GET', 'Category', 'modifyCategory', ["ROLE_ADMIN"]));
+$router->addRoute(new Route('/category/update', 'POST', 'Category', 'modifyCategory', ["ROLE_ADMIN"]));
 $router->addRoute(new Route('/category/add', 'GET', 'Category', 'addCategory', ["ROLE_ADMIN"]));
 $router->addRoute(new Route('/category/add', 'POST', 'Category', 'addCategory', ["ROLE_ADMIN"]));
 $router->addRoute(new Route('/task/add', 'GET', 'Task', 'addTask',["ROLE_USER", "ROLE_ADMIN"]));

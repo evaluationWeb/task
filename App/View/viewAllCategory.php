@@ -11,7 +11,12 @@
 
 <body>
     <header class="container-fluid">
-        <?php include "App/View/components/navbar.php"; ?>
+        <?php
+
+        use App\Utils\Tools;
+
+        include "App/View/components/navbar.php";
+        ?>
     </header>
     <main class="container-fluid">
         <h2>Liste des categories</h2>
@@ -19,8 +24,10 @@
             <thead data-theme="dark">
                 <th>ID</th>
                 <th>NAME</th>
-                <th>Supprimer</th>
-                <th>Editer</th>
+                <?php if (Tools::checkGrants("ROLE_ADMIN")) : ?>
+                    <th>Supprimer</th>
+                    <th>Editer</th>
+                <?php endif ?>
             </thead>
             <!-- Boucler sur le tableau de Category -->
             <?php foreach ($categories as $category): ?>
@@ -29,19 +36,21 @@
                     <td><?= $category->getIdCategory() ?> </td>
                     <td><?= $category->getName() ?> </td>
                     <!-- version avec id en post avec un bouton -->
+                    <?php if (Tools::checkGrants("ROLE_ADMIN")) : ?>
                     <td>
                         <button id="<?= $category->getIdCategory() ?>" data-target="modal-delete" data-tooltip="Supprimer la catégorie" onclick="toggleModal(event, this)">
                             Supprimer
                         </button>
                     </td>
                     <td>
-                        <form action="/task/category/update" method="post" >
+                        <form action="/task/category/update" method="post">
                             <input type="hidden" name="id" value="<?= $category->getIdCategory() ?>">
-                            <button type="submit"  name="update" data-tooltip="Editer la catégorie">
-                               Editer
+                            <button type="submit" name="update" data-tooltip="Editer la catégorie">
+                                Editer
                             </button>
                         </form>
                     </td>
+                    <?php endif ?>
                 </tr>
             <?php endforeach ?>
         </table>

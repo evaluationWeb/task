@@ -36,4 +36,21 @@ class Tools
             mb_detect_encoding($str)
         );
     }
+
+    /**
+     * Méthode qui test si l'utilisateur à le droit d'utiliser
+     * une fonctionnalité
+     * @param string $grant droit à vérifier
+     * @return bool true si le droit est vérifié sinon false
+     */
+    public static function checkGrants (string $grant) : bool {
+        $users = $_SESSION["grant"];
+        //boucle parcours des droits de l'utilisateur
+        foreach ($users as $userGrant) {    
+            if ( $userGrant == $grant) {
+                return true;
+            }    
+        }
+        return false;
+    }
 }
