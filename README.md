@@ -3,11 +3,12 @@ Ce site est un projet d'exercice de cours d'une TODO List en PHP POO.
 Le repository contient les corrections de celui-ci.
 
 *Attention si vous voulez l'ancienne version cloner la branche legacy*
+
 *Ou alors récupérer la **release v1** :*
 
 https://github.com/evaluationWeb/task/archive/refs/tags/v1.zip
 
-*Le code actuel est basé sur la dernière **release v3 :**
+*Le code actuel est basé sur la dernière **release v3** :*
 
 https://github.com/evaluationWeb/task/archive/refs/tags/v3.zip
 
