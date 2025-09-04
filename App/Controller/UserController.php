@@ -91,15 +91,16 @@ class UserController
             if (!empty($_POST["email"]) && !empty($_POST["password"])) {
                 $email = Utilitaire::sanitize($_POST["email"]);
                 $password = Utilitaire::sanitize($_POST["password"]);
-                $this->user->setEmail($email);
-                $this->user->setPassword($password);
+                $user = new User();
+                $user->setEmail($email);
+                $user->setPassword($password);
                 //Test si le compte existe
-                if ($this->user->isUserByEmailExist()) {
+                if ($this->userRepository->isUserByEmailExist($user)) {
                     //récupération du compte en BDD
-                    $userConnected = $this->user->findUserByEmail();
+                    $userConnected = $this->userRepository->findUserByEmail($user);
 
                     //test si le password est identique
-                    if ($this->user->passwordVerify($userConnected->getPassword())) {
+                    if ($user->passwordVerify($userConnected->getPassword())) {
 
                         //initialiser les super gobale de la SESSION
                         $_SESSION["connected"] = true;
