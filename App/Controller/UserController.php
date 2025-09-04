@@ -99,7 +99,7 @@ class UserController
                 if ($this->userRepository->isUserByEmailExist($user)) {
                     //récupération du compte en BDD
                     $userConnected = $this->userRepository->findUserByEmail($user);
-
+                    dd($userConnected);
                     //test si le password est identique
                     if ($user->passwordVerify($userConnected->getPassword())) {
 
@@ -108,7 +108,8 @@ class UserController
                         $_SESSION["email"] = $email;
                         $_SESSION["id"] = $userConnected->getIdUser();
                         $_SESSION["img"] = $userConnected->getImg();
-                        $_SESSION["grant"] = ["ROLE_PUBLIC", "ROLE_USER"];
+                        //récupération de liste de droits
+                        //$_SESSION["grant"] = explode(",",$userConnected->grants());
                         header('Location: /task');
                     } else {
                         $message = "Les informations de connexion ne sont pas correctes";

@@ -29,7 +29,7 @@ class UserRepository
             $email = $user->getEmail();
             $password = $user->getPassword();
             $img = $user->getImg();
-            $grants = $user->getGrants();
+            $grants = $user->getGrant();
             $grants = implode(",",$grants);
             
             //Requête SQL
@@ -112,7 +112,11 @@ class UserRepository
 
             $req->setFetchMode(\PDO::FETCH_CLASS, User::class);
             //récupérer le resultat
-            return $req->fetch();
+            $user = $req->fetch();
+
+            //hydratation des droits grants
+            return $this->hydrateGrantsUser($user);
+            //return $user;
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
@@ -230,5 +234,23 @@ class UserRepository
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
+    }
+
+    /**
+     * Méthode qui hydrate les droits d'un User
+     * @param objet User $user
+     * @return User 
+     */
+    private function hydrateGrantsUser(object $user) : User {
+        //test si les droits ne sont pas vides
+        if (!empty($user->grants)) {
+            //hydratation des droits grants
+            $grants = $user->grants;
+            $grants = explode(",",$grants);
+            foreach($grants as $grant) {
+                $user->addGrant($grant);
+            } 
+        }
+        return $user;
     }
 }

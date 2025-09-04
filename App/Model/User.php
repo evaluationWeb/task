@@ -11,12 +11,12 @@ class User
     private string $email;
     private string $password;
     private ?string $img;
-    private array $grants;
+    private ?array $grant;
 
     //constructeur
     public function __construct()
     {
-        $this->grants = [];
+        $this->grant = [];
     }
 
     //Getters et Setters
@@ -80,19 +80,19 @@ class User
         $this->img = $img;
     }
 
-    public function getGrants() : array {
-        return $this->grants;
+    public function getGrant() : ?array {
+        return $this->grant;
     } 
     public function addGrant(string $grant): self
     {
-        $this->grants[] = $grant;
+        $this->grant[] = $grant;
         return $this;
     }
 
     public function removeCategory(string $grant): self
     {
-        unset($this->grants[array_search($grant, $this->grants)]);
-        sort($this->grants);
+        unset($this->grant[array_search($grant, $this->grant)]);
+        sort($this->grant);
         return $this;
     }
 
