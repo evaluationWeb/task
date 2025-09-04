@@ -6,18 +6,19 @@ use App\Model\Category;
 use App\Model\User;
 use App\Model\task;
 use App\Repository\CategoryRepository;
+use App\Repository\UserRepository;
 use App\Utils\Utilitaire;
 
 class TaskController {
 
     private readonly CategoryRepository $categoryRepository;
-    private User $user;
+    private readonly UserRepository $userRepository;
     private Task $task;
 
     public function __construct()
     {
         $this->categoryRepository = new CategoryRepository();
-        $this->user = new User();
+        $this->userRepository = new UserRepository();
         $this->task = new Task();
     }
 
