@@ -71,6 +71,10 @@ SMTP::DEBUG_OFF
 
 - 9 Créer une nouvelle route dans **index.php**
 
+**Mise à jour majeure** :
+
+Ajout d'un Système des droits sur les routes
+
 Exemple :
 ```php
 //le constructeur prend les paramètres suivants :
@@ -78,5 +82,6 @@ Exemple :
 //2 la méthode HTTP (GET pour affichage, POST récupération des données d'un formulaire)
 //3 Le nom du controller (sans Controller à la fin : Home pour HomeController dans l'exemple)
 //4 le nom de la méthode du controller (sans les parenthéses home pour home() dans l'exemple)
-$router->addRoute(new Route('/', 'GET', 'Home', 'home'));
+//5 tableau des droits de la route (Exemple : ["ROLE_PUBLIC", "ROLE_USER"])
+$router->addRoute(new Route('/', 'GET', 'Home', 'home', ["ROLE_PUBLIC","ROLE_ADMIN"]));
 ```

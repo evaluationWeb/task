@@ -25,6 +25,11 @@ class HomeController
         include "App/View/viewError404.php";
     }
 
+    public function unauthorized()
+    {
+        http_response_code(401);
+        include "App/View/viewUnauthorized.php";
+    }
     /**
      * Méthode de test pour envoyer un email
      */

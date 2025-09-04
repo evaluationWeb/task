@@ -51,3 +51,7 @@ REFERENCES category(id_category);
 -- ajout de la colonne image du profil
 ALTER TABLE users
 ADD COLUMN img VARCHAR(50);
+
+-- ajout de la colonne grants
+ALTER TABLE users
+ADD COLUMN grants VARCHAR(255)

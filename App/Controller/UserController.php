@@ -3,18 +3,19 @@
 namespace App\Controller;
 
 use App\Model\User;
+use App\Repository\UserRepository;
 use App\Service\EmailService;
-use App\Utils\Utilitaire;
+use App\Utils\Tools;
 
 class UserController
 {
-    private User $user;
+    private readonly UserRepository $userRepository;
 
     private readonly EmailService $emailService;
 
     public function __construct()
     {
-        $this->user = new User();
+        $this->userRepository = new UserRepository();
         $this->emailService = new EmailService();
     }
 
@@ -28,15 +29,15 @@ class UserController
         //Test si le formulaire est submit
         if (isset($_POST["submit"])) {
             if (!empty($_POST["firstname"]) && !empty($_POST["lastname"]) && !empty($_POST["email"]) && !empty($_POST["password"])) {
+                $user = new User();
+                $email = Tools::sanitize($_POST["email"]);
+                $user->setEmail($email);
 
-                $email = Utilitaire::sanitize($_POST["email"]);
-                $this->user->setEmail($email);
-
-                if (!$this->user->isUserByEmailExist()) {
+                if (!$this->userRepository->isUserByEmailExist($user)) {
                     //Sanitize des autres valeur
-                    $firstname = Utilitaire::sanitize($_POST["firstname"]);
-                    $lastname = Utilitaire::sanitize($_POST["lastname"]);
-                    $password = Utilitaire::sanitize($_POST["password"]);
+                    $firstname = Tools::sanitize($_POST["firstname"]);
+                    $lastname = Tools::sanitize($_POST["lastname"]);
+                    $password = Tools::sanitize($_POST["password"]);
                     //Test si l'utilisateur à ajouter une image
                     if (!empty($_FILES["img"]["tmp_name"])) {
 
@@ -45,25 +46,27 @@ class UserController
                         //récupération de nom par défault
                         $defaultName = $_FILES["img"]["name"];
                         //récupération du format de l'image
-                        $format = Utilitaire::getFileExtension($defaultName);
+                        $format = Tools::getFileExtension($defaultName);
                         //nouveau nom 
                         $newImgName = uniqid("user") . $firstname . $lastname . "." . $format;
                         //enregistrement de l'image
                         move_uploaded_file($tmp, ".." . BASE_URL . "/public/image/" . $newImgName);
                         //set name de l'image
-                        $this->user->setImg($newImgName);
+                        $user->setImg($newImgName);
                     } else {
                         //Set default image
-                        $this->user->setImg("profil.png");
+                        $user->setImg("profil.png");
                     }
                     //Set et hash du mot de passe
-                    $this->user->setFirstname($firstname);
-                    $this->user->setLastname($lastname);
-                    $this->user->setPassword($password);
-                    $this->user->hashPassword();
+                    $user->setFirstname($firstname);
+                    $user->setLastname($lastname);
+                    $user->setPassword($password);
+                    $user->hashPassword();
+                    $user->addGrant("ROLE_USER");
                     //ajoute le compte en BDD
-                    $this->user->saveUser();
-                    $message = "Le compte : " . $this->user->getEmail() . " a été ajouté en BDD";
+                    $this->userRepository->saveUser($user);
+                    //Message et redirection
+                    $message = "Le compte : " . $user->getEmail() . " a été ajouté en BDD";
                     header("Refresh:2; url=/task/user/register");
                 } else {
 
@@ -88,23 +91,26 @@ class UserController
         $message = "";
         if (isset($_POST["submit"])) {
             if (!empty($_POST["email"]) && !empty($_POST["password"])) {
-                $email = Utilitaire::sanitize($_POST["email"]);
-                $password = Utilitaire::sanitize($_POST["password"]);
-                $this->user->setEmail($email);
-                $this->user->setPassword($password);
+                $email = Tools::sanitize($_POST["email"]);
+                $password = Tools::sanitize($_POST["password"]);
+                $user = new User();
+                $user->setEmail($email);
+                $user->setPassword($password);
                 //Test si le compte existe
-                if ($this->user->isUserByEmailExist()) {
+                if ($this->userRepository->isUserByEmailExist($user)) {
                     //récupération du compte en BDD
-                    $userConnected = $this->user->findUserByEmail();
-
+                    $userConnected = $this->userRepository->findUserByEmail($user);
                     //test si le password est identique
-                    if ($this->user->passwordVerify($userConnected->getPassword())) {
+                    if ($user->passwordVerify($userConnected->getPassword())) {
 
                         //initialiser les super gobale de la SESSION
                         $_SESSION["connected"] = true;
                         $_SESSION["email"] = $email;
                         $_SESSION["id"] = $userConnected->getIdUser();
                         $_SESSION["img"] = $userConnected->getImg();
+                        //récupération de la liste de droits
+                        $_SESSION["grant"] = $userConnected->getGrant();
+                        //redirection vers accueil connecté
                         header('Location: /task');
                     } else {
                         $message = "Les informations de connexion ne sont pas correctes";
@@ -139,13 +145,14 @@ class UserController
     public function showUserProfile()
     {
         //Récupération et nettoyage de la super globale session
-        $email = Utilitaire::sanitize($_SESSION["email"]);
+        $email = Tools::sanitize($_SESSION["email"]);
 
         //setter l'email à l'objet User
-        $this->user->setEmail($email);
+        $user = new User();
+        $user->setEmail($email);
 
         //Récupération du compte 
-        $userConnected = $this->user->findUserByEmail();
+        $userConnected = $this->userRepository->findUserByEmail($user);
 
         //Retourne la vue HTML
         include_once "App/View/viewUserProfil.php";
@@ -163,28 +170,29 @@ class UserController
             //Test si tous les champs sont remplis
             if (!empty($_POST["oldPassword"]) && !empty($_POST["newPassword"]) && !empty($_POST["confirmPassword"])) {
                 //récupération et nettoyage des informations
-                $oldPassword = Utilitaire::sanitize($_POST["oldPassword"]);
-                $newPassword = Utilitaire::sanitize($_POST["newPassword"]);
-                $confirmPassword = Utilitaire::sanitize($_POST["confirmPassword"]);
-                $email = Utilitaire::sanitize($_SESSION["email"]);
+                $oldPassword = Tools::sanitize($_POST["oldPassword"]);
+                $newPassword = Tools::sanitize($_POST["newPassword"]);
+                $confirmPassword = Tools::sanitize($_POST["confirmPassword"]);
+                $email = Tools::sanitize($_SESSION["email"]);
                 //Test si les 2 nouveaux mots de passe sont identiques
                 if ($newPassword === $confirmPassword) {
                     //set de l'email
-                    $this->user->setEmail($email);
+                    $user = new User();
+                    $user->setEmail($email);
                     //Test si le compte existe
-                    if ($this->user->isUserByEmailExist()) {
+                    if ($this->userRepository->isUserByEmailExist($user)) {
                         //récupération du compte depuis son email
-                        $oldUser = $this->user->findUserByEmail();
+                        $oldUser = $this->userRepository->findUserByEmail($user);
                         //récupération de l'ancien hash
                         $oldHash = $oldUser->getPassword();
                         //test si l'ancien mot de passe est valide
                         if (password_verify($oldPassword, $oldHash)) {
                             //set du nouveau mot de passe
-                            $this->user->setPassword($newPassword);
+                            $user->setPassword($newPassword);
                             //Hash du nouveau mot de passe
-                            $this->user->hashPassword();
+                            $user->hashPassword();
                             //mise à jour du mot de passe
-                            $this->user->updatePassword();
+                            $this->userRepository->updatePassword($user);
                             $message = "Le mot de passe à été mis à jour";
                             header("Refresh:2; url=/task/user/deconnexion");
                         } else {
@@ -223,18 +231,19 @@ class UserController
                 //récupération de nom par défault
                 $defaultName = $_FILES["img"]["name"];
                 //récupération du format de l'image
-                $format = Utilitaire::getFileExtension($defaultName);
+                $format = Tools::getFileExtension($defaultName);
                 //set de l'email
-                $this->user->setEmail(Utilitaire::sanitize($_SESSION["email"]));
+                $user = new User();
+                $user->setEmail(Tools::sanitize($_SESSION["email"]));
                 //récupération des informations de l'utilisateur
-                $userConnected = $this->user->findUserByEmail();
+                $userConnected = $this->userRepository->findUserByEmail($user);
                 $newImgName = uniqid("user") . $userConnected->getFirstname() . $userConnected->getLastname() . "." . $format;
                 //enregistrement de l'image
                 move_uploaded_file($tmp, ".." . BASE_URL . "/public/image/" . $newImgName);
                 //set de l'image
-                $this->user->setImg($newImgName);
+                $user->setImg($newImgName);
                 //update du compte en BDD
-                $this->user->updateImage();
+                $this->userRepository->updateImage($user);
                 //mise à jour de la session
                 $_SESSION["img"] = $newImgName;
                 //message de confirmation et redirection
@@ -258,31 +267,32 @@ class UserController
     {
         //Test si le formulaire est submit
         if (isset($_POST["submit"])) {
-            $this->user->setEmail(Utilitaire::sanitize($_SESSION["email"]));
-            $oldUserInfo = $this->user->findUserByEmail();
+            $user = new User();
+            $user->setEmail(Tools::sanitize($_SESSION["email"]));
+            $oldUserInfo = $this->userRepository->findUserByEmail($user);
             //Test si les champs sont remplis
             if (!empty($_POST["firstname"]) && !empty($_POST["firstname"]) && !empty($_POST["lastname"])) {
                 //récupération et nettoyage des informations
-                $firstname = Utilitaire::sanitize($_POST["firstname"]);
-                $lastname = Utilitaire::sanitize($_POST["lastname"]);
-                $email = Utilitaire::sanitize($_POST["email"]);
-                $oldEmail = Utilitaire::sanitize($_SESSION["email"]);
+                $firstname = Tools::sanitize($_POST["firstname"]);
+                $lastname = Tools::sanitize($_POST["lastname"]);
+                $email = Tools::sanitize($_POST["email"]);
+                $oldEmail = Tools::sanitize($_SESSION["email"]);
                 //set de l'email
-                $this->user->setEmail($email);
+                $user->setEmail($email);
                 //test si l'email n'existe pas déja
-                if ($email != $oldEmail && $this->user->isUserByEmailExist()) {
+                if ($email != $oldEmail && $this->userRepository->isUserByEmailExist($user)) {
 
                     $message = "Attention l'email existe déja en BDD";
                     header("Refresh:1; url=/task/user/profil");
                 } else {
                     //set du prénon et du nom
-                    $this->user->setFirstname($firstname);
-                    $this->user->setLastname($lastname);
+                    $user->setFirstname($firstname);
+                    $user->setLastname($lastname);
                     //Mise à jour du compte
-                    $this->user->updateInformation($oldEmail);
+                    $this->userRepository->updateInformation($user, $oldEmail);
                     //Mise à jour de la session
-                    $_SESSION["email"] = $this->user->getEmail();
-                    $oldUserInfo = $this->user->findUserByEmail();
+                    $_SESSION["email"] = $user->getEmail();
+                    $oldUserInfo = $this->userRepository->findUserByEmail($user);
                     //Message de confirmation et redirection
                     $message = "Le compte a été mis à jour";
                     header("Refresh:1; url=/task/user/profil");
@@ -292,9 +302,10 @@ class UserController
                 header("Refresh:1; url=/task/user/update/info");
             }
         } else {
+            $user = new User();
             //Récupération des anciennes valeurs
-            $this->user->setEmail(Utilitaire::sanitize($_SESSION["email"]));
-            $oldUserInfo = $this->user->findUserByEmail();
+            $user->setEmail(Tools::sanitize($_SESSION["email"]));
+            $oldUserInfo = $this->userRepository->findUserByEmail($user);
         }
 
         include_once "App/View/viewModifyUserProfil.php";
@@ -312,7 +323,7 @@ class UserController
             //Test si l'email est renseigné
             if (!empty($_POST["email"])) {
                 //Nettoyage du champ
-                $email = Utilitaire::sanitize($_POST["email"]);
+                $email = Tools::sanitize($_POST["email"]);
                 //Timestamp pour la durée de vie du lien
                 $date = new \DateTimeImmutable();
                 $dateValidity = $date->getTimestamp();
@@ -346,9 +357,9 @@ class UserController
         //test si les paramètres GET existent
         if (isset($_GET["email"]) && isset($_GET["validity"])) {
             //Nettoyage du hash de l'email (GET)
-            $hashEmail = Utilitaire::sanitize($_GET["email"]);
+            $hashEmail = Tools::sanitize($_GET["email"]);
             //Nettoyage de la date de validitée (GET)
-            $dateValidity = (int) Utilitaire::sanitize($_GET["validity"]);
+            $dateValidity = (int) Tools::sanitize($_GET["validity"]);
             //test si le formulaire est submit
             if (isset($_POST["submit"])) {
                 //test si les champs sont tous renseignés
@@ -360,27 +371,28 @@ class UserController
                     //test si la date est toujours valide (- de 2h00)
                     if (new \DateTimeImmutable() < $dateValidityPlus2Hours) {
                         //set de l'email en MD5 au User
-                        $this->user->setEmail($hashEmail);
+                        $user = new User();
+                        $user->setEmail($hashEmail);
                         //test si l'email est valide
-                        if ($this->user->isUserByHashEmailExist()) {
+                        if ($this->userRepository->isUserByHashEmailExist($user)) {
                             //récupération et nettoyage du password
-                            $newPassword = Utilitaire::sanitize($_POST["newPassword"]);
+                            $newPassword = Tools::sanitize($_POST["newPassword"]);
                             //set du password au User
-                            $this->user->setPassword($newPassword);
+                            $user->setPassword($newPassword);
                             //hash du password
-                            $this->user->hashPassword();
+                            $user->hashPassword();
                             //Mise à jour du mot de passe
-                            $this->user->updateForgotPassword();
+                            $this->userRepository->updateForgotPassword($user);
                             //Message de confirmation et redirection
                             $message = "Le mot de passe à été modifié";
-                            header("Refresh:2; url=" . BASE_URL . "/user/connexion");  
-                        } 
+                            header("Refresh:2; url=" . BASE_URL . "/user/connexion");
+                        }
                         //Sinon on arrête
                         else {
                             $message = "L'email n'est pas valide";
-                            header("Refresh:2; url=" . BASE_URL . "");        
+                            header("Refresh:2; url=" . BASE_URL . "");
                         }
-                    } 
+                    }
                     //Sinon la date est dépassée
                     else {
                         $message = "Le temps est dépassé refaire la demande";

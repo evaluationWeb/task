@@ -9,16 +9,18 @@ class Route
     private ?string $httpMethod;
     private ?string $controller;
     private ?string $method;
+    private array $grants;
     private array $param = [];
 
     //Méthodes
     //Constructeur
-    public function __construct(string $url, string $httpMethod, string $controller, string $method, ?array $param = [])
+    public function __construct(string $url, string $httpMethod, string $controller, string $method, array $grants , array $param = [])
     {
         $this->url = $url;
         $this->httpMethod = $httpMethod;
         $this->controller = $controller;
         $this->method = $method;
+        $this->addGrant($grants);
         if($param){
             $this->addParams($param);
         } 
@@ -50,6 +52,10 @@ class Route
         return $this->httpMethod;
     }
 
+    public function getGrants() : array {
+        return $this->grants;
+    }
+
     //Setters
     public function setUrl(string $url): void
     {
@@ -65,7 +71,13 @@ class Route
     {
         $this->method = $method;
     }
-    
+    public function addGrant(array $grants): void
+    {
+        foreach ($grants as $grant) {
+            $this->grants[] = $grant;
+        }
+    }
+
     public function addParams(array $params): void
     {
         foreach ($params as $param) {

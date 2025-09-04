@@ -3,17 +3,18 @@
 namespace App\Controller;
 
 use App\Model\Category;
-use App\Utils\Utilitaire;
+use App\Repository\CategoryRepository;
+use App\Utils\Tools;
 
 class CategoryController
 {
     //Attribut Model Category
-    private Category $category;
+    private CategoryRepository $categoryRepository;
 
     public function __construct()
     {
         //Injection de dépendance
-        $this->category = new Category();
+        $this->categoryRepository = new CategoryRepository();
     }
 
     public function showAllCategory()
@@ -22,12 +23,12 @@ class CategoryController
         //Test si le message existe
         if (isset($_GET["message"])) {
             //Récupération et sanitize du message
-            $message = Utilitaire::sanitize($_GET["message"]);
+            $message = Tools::sanitize($_GET["message"]);
             //refresh de la page au bout de 1 seconde et demie
             header("Refresh:4; url=/task/category/all");
         }
         //tableau des catégories
-        $categories = $this->category->findAllCategory();
+        $categories = $this->categoryRepository->findAllCategory();
         include "App/View/viewAllCategory.php";
     }
 
@@ -40,15 +41,15 @@ class CategoryController
             //tester si le champs est non vide
             if (!empty($_POST["name"])) {
                 //nettoyer les informations
-                $name = Utilitaire::sanitize($_POST["name"]);
+                $name = Tools::sanitize($_POST["name"]);
                 //Créer un Objet Category
                 $category = new Category();
                 //Setter le nom
                 $category->setName($name);
                 //tester si la category n'existe pas
-                if (!$category->isCategoryByNameExist()) {
+                if (!$this->categoryRepository->isCategoryByNameExist($category)) {
                     //ajouter la category en BDD
-                    $category->saveCategory();
+                    $this->categoryRepository->saveCategory($category);
                     //redirection vers la liste des categories avec un paramètre GET
                     header("Location: /task/category/all?message=La category " . $name . " a été ajouté en BDD");
                 } else {
@@ -65,8 +66,8 @@ class CategoryController
     public function removeCategory()
     {
         if (isset($_GET["id"])) {
-            $id = Utilitaire::sanitize($_GET["id"]);
-            $this->category->deleteCategory($id);
+            $id = Tools::sanitize($_GET["id"]);
+            $this->categoryRepository->deleteCategory($id);
             header('Location: /task/category/all?message=La catégorie a été supprimé');
         }
         header('Location: /task/category/all');
@@ -83,24 +84,26 @@ class CategoryController
                 header('Location: /task/category/all?message=Veuillez remplir tous les champs');
             }
             //nettoyage des informations
-            $name = Utilitaire::sanitize($_POST["name"]);
-            $id = Utilitaire::sanitize($_POST["id"]);
-            //set du name
-            $this->category->setName($name);
+            $name = Tools::sanitize($_POST["name"]);
+            $id = Tools::sanitize($_POST["id"]);
+            $category = new Category();
+            //set du name et ID
+            $category->setName($name);
+            $category->setIdCategory($id);
             //Test si la catégorie existe déja (éviter les doublons)
-            if ($this->category->isCategoryByNameExist()) {
+            if ($this->categoryRepository->isCategoryByNameExist($category)) {
                 //redirection à la liste des catégorie avec un message
                 header('Location: /task/category/all?message=Aucune mise à jour');
             }
             //Mise à jour de la catégorie
-            $this->category->updateCategory($id);
+            $this->categoryRepository->updateCategory($category);
             //redirection à la liste des catégorie avec un message
             header('Location: /task/category/all?message=la categorie a été mise à jour');
         } else {
             //sanitize de l'id 
-            $id = Utilitaire::sanitize($_POST["id"]);
+            $id = Tools::sanitize($_POST["id"]);
             //récupération de la précédente valeur de la catégorie
-            $cat = $this->category->findCategory($id);
+            $cat = $this->categoryRepository->findCategory($id);
         }
         include "App/View/viewModifyCategory.php";
     }
