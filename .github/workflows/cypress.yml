@@ -58,8 +58,7 @@ jobs:
             # migration de la base de données
             - name: migration DB
               run: |
-                mysql -u root -proot
-                SOURCE base.sql;
+                mysql -h 127.0.0.1 -P 3306 -u root -prootpw < base.sql
             
             # démarrage du serveur PHP
             - name: Run PHP local server
