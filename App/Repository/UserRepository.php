@@ -172,4 +172,36 @@ class UserRepository
             throw new \Exception($e->getMessage());
         }
     }
+
+    /**
+     * Méthode qui vérifie si un compte existe en BDD 
+     * par un email hash en MD5
+     * @param User $user Objet User
+     * @return bool true si existe / false si n'existe pas
+     */
+    public function isUserByHashEmailExist(User $user) : bool {
+        try {
+            //Récupération de la valeur de name (category)
+            $email = $user->getEmail();
+            //Ecrire la requête SQL
+            $request = "SELECT u.id_users FROM users AS u WHERE md5(u.email) = ?";
+            //préparer la requête
+            $req = $this->connection->prepare($request);
+            //assigner le paramètre
+            $req->bindParam(1, $email, \PDO::PARAM_STR);
+            //exécuter la requête
+            $req->execute();
+            //récupérer le resultat
+            $data = $req->fetch(\PDO::FETCH_ASSOC);
+            //Test si l'enrgistrement est vide
+            if (empty($data)) {
+                return false;
+            }
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    
 }
