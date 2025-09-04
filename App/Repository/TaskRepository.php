@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Utils\Bdd;
 use App\Model\Task;
+use App\Model\User;
+use App\Model\Category;
 
 class TaskRepository 
 {
@@ -85,5 +87,74 @@ class TaskRepository
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
+    }
+
+    /**
+     * Recupérer toutes les taches avec leur auteur et les categories associées
+     * @param User $user user connecté
+     * @return array Task retourne un tableau de Task
+     */
+    public function findAllTask(User $user): array
+    {
+        try {
+            $idUser = $user->getIdUser();
+            $request = "SELECT t.id_task AS idTask, t.title, t.description, t.created_at AS createdAt, 
+            t.end_date AS endDate, t.status, t.id_users, u.firstname, u.lastname, 
+            GROUP_CONCAT(c.id_category) AS categoriesId,
+            GROUP_CONCAT(c.name) AS categoriesName
+            FROM task AS t INNER JOIN users AS u            
+            ON t.id_users = u.id_users LEFT JOIN task_category AS tc
+            ON t.id_task = tc.id_task INNER JOIN category AS c
+            ON tc.id_category = c.id_category
+            WHERE t.status = 0 AND u.id_users = ? GROUP BY idTask ";
+            $req = $this->connection->prepare($request);
+            $req->bindParam(1,$idUser, \PDO::PARAM_INT );
+            $req->execute();
+            $data = $req->fetchAll(\PDO::FETCH_ASSOC);
+            $tasks = [];
+            //hydratation en task obj
+            foreach ($data as $taskEntry) {
+                //Hydratation en Task
+                $task = $this->hydrate($taskEntry);
+                //Ajouter à la liste
+                $tasks[] = $task;
+            }
+            return $tasks;
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    /**
+     * Méthode qui transforme un tableau associatif en Task
+     * @return Task retourne une Task avec toutes les valeurs assignées.
+     */
+    public function hydrate(array $value): Task
+    {
+        $task = new Task();
+        $task->setIdTask($value["idTask"]);
+        $task->setTitle($value["title"]);
+        $task->setDescription($value["description"]);
+        $createdAt = new \DateTimeImmutable($value["createdAt"]);
+        $endDate = new \DateTimeImmutable($value["endDate"]);
+        $task->setCreatedAt($createdAt);
+        $task->setEndDate($endDate);
+        if(isset($value["id_users"])) {
+            $user = new User();
+            $user->setIdUser($value["id_users"]);
+            $user->setLastname($value["lastname"]);
+            $user->setFirstname($value["firstname"]);
+            $task->setUser($user);
+        }
+        $categoriesId = explode(",", $value["categoriesId"]);
+        $categoriesName = explode(",", $value["categoriesName"]);
+        //Création des category et assignation à la task
+        for ($i = 0; $i < count($categoriesId); $i++) {
+            $category = new Category();
+            $category->setIdCategory($categoriesId[$i]);
+            $category->setName($categoriesName[$i]);
+            $task->addCategory($category);
+        }
+        return $task;
     }
 }
