@@ -2,15 +2,17 @@
 
 namespace App\Utils;
 
-class Tools {
+class Tools
+{
 
     /**
      * Méthode pour Supprimer les balises + les caractères spéciaux, suppression des espaces
      * @param string $value la chaine à nettoyer
      * @return string chaine néttoyer 
-    */
-    public static function sanitize(string $value) : string {
-    
+     */
+    public static function sanitize(string $value): string
+    {
+
         return htmlspecialchars(strip_tags(trim($value)), ENT_NOQUOTES);
     }
 
@@ -19,8 +21,9 @@ class Tools {
      * @param string $file nom du fichier
      * @return string extension du fichier
      */
-    public static function getFileExtension($file){
-        return substr(strrchr($file,'.'),1);
+    public static function getFileExtension($file)
+    {
+        return substr(strrchr($file, '.'), 1);
     }
 
     //Méthode qui convertie une chaine de caractéres en UTF-8
