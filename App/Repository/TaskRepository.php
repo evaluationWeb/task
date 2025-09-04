@@ -184,6 +184,7 @@ class TaskRepository
             $req->bindParam(2, $description, \PDO::PARAM_STR);
             $req->bindParam(3, $endDate, \PDO::PARAM_STR);
             $req->bindParam(4, $idTask, \PDO::PARAM_INT);
+
             //Exécution de la requête principale
             $req->execute();
 
@@ -226,4 +227,4 @@ class TaskRepository
             throw new \Exception($e->getMessage());
         }
     }
-}
+}4
