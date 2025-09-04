@@ -1,70 +1,90 @@
-name: PHP 8 vanilla + Cypress E2E Tests
+name: Setup MySQL and load schema
 
 on:
-    push:
-        branches: [ main ]
-    pull_request:
-        branches: [ main ]
+  push:
+    paths:
+      - "base.sql"
+      - ".github/workflows/cypress.yml"
+  workflow_dispatch:
+
 jobs:
-    Symfony-test:
-        runs-on: ubuntu-latest
-        # installation des services
-        services:
-            mysql:
-                image: mysql:8.0
-                env:
-                    MYSQL_ROOT_PASSWORD: root
-                    MYSQL_DATABASE: tasks
-                ports:
-                    - 3306:3306
-                options: >-
-                    --health-cmd="mysqladmin ping -h localhost"
-                    --health-interval=10s
-                    --health-timeout=5s
-                    --health-retries=5
-        steps:
-            # récupération du code du repository
-            - name: Checkout code
-              uses: actions/checkout@v4
+  db:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpw
+          MYSQL_DATABASE: taskdb
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -prootpw"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install MySQL client & composer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mysql-client php-cli php-mbstring unzip
+          EXPECTED_CHECKSUM="$(php -r 'copy(\"https://composer.github.io/installer.sig\", \"php://stdout\");')"
+          php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+          php -r "if (hash_file('sha384', 'composer-setup.php') !== '$EXPECTED_CHECKSUM') { echo 'Bad installer'; unlink('composer-setup.php'); exit(1); }"
+          php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+          rm composer-setup.php
+
+      - name: Wait for MySQL
+        run: |
+          for i in {1..60}; do
+            mysqladmin ping -h 127.0.0.1 -prootpw && break
+            sleep 2
+          done
+
+      - name: Create database (idempotent)
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -u root -prootpw -e \
+            "CREATE DATABASE IF NOT EXISTS taskdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+      - name: Load schema from base.sql
+        run: |
+          # Si base.sql contient CREATE DATABASE/USE, tu peux enlever 'taskdb' ci-dessous
+          mysql -h 127.0.0.1 -P 3306 -u root -prootpw taskdb < base.sql
+
+      - name: Build env.php for the app
+        run: |
+          cat > env.php <<'PHP'
+          <?php
+          const BDD_LOGIN = "root";
+          const BDD_PASSWORD = "rootpw";
+          const BDD_SERVER = "127.0.0.1";
+          const BDD_NAME = "taskdb";
+          const BASE_URL = "/";
+          PHP
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --no-progress
+
             
-            # configuration de PHP
-            - name: Set up PHP
-              uses: shivammathur/setup-php@v2
-              with:
-                php-version: "8.2"
-                extensions: mbstring, intl, pdo_mysql, sodium
-                tools: composer  
-            
-            # paramétrage de l'environnement de test (fichier .env)
-            - name: Set up .env for CI
-              run: |
-                touch .env
-                echo '<?php
-                const BDD_LOGIN = "root";' >> .env
-                echo 'const BDD_PASSWORD = "root";' >> .env
-                echo 'const BDD_SERVER = "localhost:3306";' >> .env
-                echo 'const BDD_NAME = "tasks";' >> .env
-                echo 'const BASE_URL = "/task";' >> .env
-                echo 'const SMTP_SERVER = "smtp.laposte.net";' >> .env
-                echo 'const SMTP_PORT = 587;' >> .env
-                echo 'const SMTP_SECURITY = "tls";' >> .env
-                echo 'const SMTP_LOGIN = "xxxx@xxxxx.xxx";' >> .env
-                echo 'const SMTP_PASSWORD = "xxxxxxxxxxx";' >> .env
-            
-            # installation des dépendances PHP
-            - name: Install PHP dependencies
-              run: composer install --no-interaction --prefer-dist
-            
-            # migration de la base de données
-            - name: migration DB
-              run: |
-                mysql -h 127.0.0.1 -P 3306 -u root -prootpw < base.sql
-            
-            # démarrage du serveur PHP
-            - name: Run PHP local server
-              run: |
-                php -S 127.0.0.1:8000 -t public &
-            
-            # Cypress Actions
-            - name : Test Cypress
-              uses: cypress-io/github-action@v6
+      # installation des dépendances PHP
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist
+      
+      # migration de la base de données
+      - name: migration DB
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -u root -prootpw < base.sql
+      
+      # démarrage du serveur PHP
+      - name: Run PHP local server
+        run: |
+          php -S 127.0.0.1:8000 -t public &
+      
+      # Cypress Actions
+      - name : Test Cypress
+        uses: cypress-io/github-action@v6
