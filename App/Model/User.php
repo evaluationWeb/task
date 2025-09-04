@@ -11,6 +11,13 @@ class User
     private string $email;
     private string $password;
     private ?string $img;
+    private array $grants;
+
+    //constructeur
+    public function __construct()
+    {
+        $this->grants = [];
+    }
 
     //Getters et Setters
     public function getIdUser(): int
@@ -71,6 +78,22 @@ class User
     public function setImg(?string $img): void
     {
         $this->img = $img;
+    }
+
+    public function getGrants() : array {
+        return $this->grants;
+    } 
+    public function addGrant(string $grant): self
+    {
+        $this->grants[] = $grant;
+        return $this;
+    }
+
+    public function removeCategory(string $grant): self
+    {
+        unset($this->grants[array_search($grant, $this->grants)]);
+        sort($this->grants);
+        return $this;
     }
 
     //méthode pour hash et vérifier le password
