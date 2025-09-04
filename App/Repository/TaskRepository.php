@@ -254,4 +254,21 @@ class TaskRepository
             throw new \Exception($e->getMessage());
         }
     }
+
+    /**
+     * Méthode qui valide une Task
+     * @Return void
+     */
+    public function validateTask(Task $task) {
+        try {
+            $idTask = $task->getIdTask();
+            $request = "UPDATE task set status = 1 WHERE id_task  = ?";
+            $req = $this->connection->prepare($request);
+            $req->bindParam(1, $idTask, \PDO::PARAM_INT);
+            $req->execute();
+        
+        } catch(\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
 }
