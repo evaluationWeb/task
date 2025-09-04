@@ -3,18 +3,19 @@
 namespace App\Controller;
 
 use App\Model\User;
+use App\Repository\UserRepository;
 use App\Service\EmailService;
 use App\Utils\Utilitaire;
 
 class UserController
 {
-    private User $user;
+    private readonly UserRepository $userRepository;
 
     private readonly EmailService $emailService;
 
     public function __construct()
     {
-        $this->user = new User();
+        $this->userRepository = new UserRepository();
         $this->emailService = new EmailService();
     }
 
@@ -28,11 +29,11 @@ class UserController
         //Test si le formulaire est submit
         if (isset($_POST["submit"])) {
             if (!empty($_POST["firstname"]) && !empty($_POST["lastname"]) && !empty($_POST["email"]) && !empty($_POST["password"])) {
-
+                $user = new User();
                 $email = Utilitaire::sanitize($_POST["email"]);
-                $this->user->setEmail($email);
+                $user->setEmail($email);
 
-                if (!$this->user->isUserByEmailExist()) {
+                if (!$this->userRepository->isUserByEmailExist($user)) {
                     //Sanitize des autres valeur
                     $firstname = Utilitaire::sanitize($_POST["firstname"]);
                     $lastname = Utilitaire::sanitize($_POST["lastname"]);
@@ -51,19 +52,19 @@ class UserController
                         //enregistrement de l'image
                         move_uploaded_file($tmp, ".." . BASE_URL . "/public/image/" . $newImgName);
                         //set name de l'image
-                        $this->user->setImg($newImgName);
+                        $user->setImg($newImgName);
                     } else {
                         //Set default image
-                        $this->user->setImg("profil.png");
+                        $user->setImg("profil.png");
                     }
                     //Set et hash du mot de passe
-                    $this->user->setFirstname($firstname);
-                    $this->user->setLastname($lastname);
-                    $this->user->setPassword($password);
-                    $this->user->hashPassword();
+                    $user->setFirstname($firstname);
+                    $user->setLastname($lastname);
+                    $user->setPassword($password);
+                    $user->hashPassword();
                     //ajoute le compte en BDD
-                    $this->user->saveUser();
-                    $message = "Le compte : " . $this->user->getEmail() . " a été ajouté en BDD";
+                    $this->userRepository->saveUser($user);
+                    $message = "Le compte : " . $user->getEmail() . " a été ajouté en BDD";
                     header("Refresh:2; url=/task/user/register");
                 } else {
 
@@ -105,7 +106,7 @@ class UserController
                         $_SESSION["email"] = $email;
                         $_SESSION["id"] = $userConnected->getIdUser();
                         $_SESSION["img"] = $userConnected->getImg();
-                        $_SESSION["grant"] = ["ROLE_PUBLIC","ROLE_USER"];
+                        $_SESSION["grant"] = ["ROLE_PUBLIC", "ROLE_USER"];
                         header('Location: /task');
                     } else {
                         $message = "Les informations de connexion ne sont pas correctes";
@@ -374,14 +375,14 @@ class UserController
                             $this->user->updateForgotPassword();
                             //Message de confirmation et redirection
                             $message = "Le mot de passe à été modifié";
-                            header("Refresh:2; url=" . BASE_URL . "/user/connexion");  
-                        } 
+                            header("Refresh:2; url=" . BASE_URL . "/user/connexion");
+                        }
                         //Sinon on arrête
                         else {
                             $message = "L'email n'est pas valide";
-                            header("Refresh:2; url=" . BASE_URL . "");        
+                            header("Refresh:2; url=" . BASE_URL . "");
                         }
-                    } 
+                    }
                     //Sinon la date est dépassée
                     else {
                         $message = "Le temps est dépassé refaire la demande";
