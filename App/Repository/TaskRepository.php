@@ -127,6 +127,7 @@ class TaskRepository
 
     /**
      * Méthode qui transforme un tableau associatif en Task
+     * @param array $value
      * @return Task retourne une Task avec toutes les valeurs assignées.
      */
     public function hydrate(array $value): Task
@@ -156,5 +157,73 @@ class TaskRepository
             $task->addCategory($category);
         }
         return $task;
+    }
+
+    /**
+     * Méthode qui met à jour une tache et ces catégories
+     * @param Task $task Objet Task
+     * @param int $id 
+     * @return void
+     */
+
+    public function updateTask(Task $task,int $id): void
+    {
+        try {
+            $idTask = $id;
+            //Récupération des valeurs
+            $title = $task->getTitle();
+            $description = $task->getDescription();
+            $endDate = $task->getEndDate()->format('Y-m-d H:i:s');
+            $categories = $task->getCategories();
+            //Création de la requête
+            $request = "UPDATE task SET title = ?, description = ?, end_date = ? WHERE id_task = ?";
+            //Préparation de la requête
+            $req = $this->connection->prepare($request);
+            //Bind des paramètres (Task)
+            $req->bindParam(1, $title, \PDO::PARAM_STR);
+            $req->bindParam(2, $description, \PDO::PARAM_STR);
+            $req->bindParam(3, $endDate, \PDO::PARAM_STR);
+            $req->bindParam(4, $idTask, \PDO::PARAM_INT);
+            //Exécution de la requête principale
+            $req->execute();
+
+            //Suppression de toutes la catégories ratachées à la tache
+            $request2 = "DELETE FROM task_category WHERE id_task = ?";
+            $req2 = $this->connection->prepare($request2);
+            $req2->bindParam(1, $idTask, \PDO::PARAM_INT);
+            $req2->execute();
+            //Test si la liste des taches posséde des categories
+            if (!empty($this->categories)) {
+                //Création de la requête pour chaque enregistrement (table asssociation task_category)
+                $requestTaskCategory = "INSERT INTO task_category(id_task, id_category) VALUES ";
+
+                //Tableau de BindParam
+                $tabBind = [];
+
+                //Boucle pour construire le tableau de BindParam et la requête
+                for ($i = 0; $i < count($categories); $i++) {
+                    //partie tableau
+
+                    //Ajout de la colonne task
+                    $colTask = ":idtask" . ($i + 1);
+                    $tabBind[$colTask] = $idTask;
+
+                    //Ajout de la colonne category
+                    $colCat = ":idcat" . ($i + 1);
+                    $tabBind[$colCat] = $categories[$i]->getIdCategory();
+
+                    //partie requête
+                    $requestTaskCategory .= "($colTask, " . $colCat . "),";
+                }
+                //Suppression du dernier caractère ','
+                $requestTaskCategory = rtrim($requestTaskCategory, ',');
+                //Préparation de la requête
+                $req2 = $this->connection->prepare($requestTaskCategory);
+                //Exécution de la requête
+                $req2->execute($tabBind);
+            }
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
     }
 }
