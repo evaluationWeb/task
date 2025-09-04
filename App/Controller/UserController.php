@@ -368,17 +368,18 @@ class UserController
                     //test si la date est toujours valide (- de 2h00)
                     if (new \DateTimeImmutable() < $dateValidityPlus2Hours) {
                         //set de l'email en MD5 au User
-                        $this->user->setEmail($hashEmail);
+                        $user = new User();
+                        $user->setEmail($hashEmail);
                         //test si l'email est valide
-                        if ($this->user->isUserByHashEmailExist()) {
+                        if ($this->userRepository->isUserByHashEmailExist($user)) {
                             //récupération et nettoyage du password
                             $newPassword = Utilitaire::sanitize($_POST["newPassword"]);
                             //set du password au User
-                            $this->user->setPassword($newPassword);
+                            $user->setPassword($newPassword);
                             //hash du password
-                            $this->user->hashPassword();
+                            $user->hashPassword();
                             //Mise à jour du mot de passe
-                            $this->user->updateForgotPassword();
+                            $this->userRepository->updateForgotPassword($user);
                             //Message de confirmation et redirection
                             $message = "Le mot de passe à été modifié";
                             header("Refresh:2; url=" . BASE_URL . "/user/connexion");
