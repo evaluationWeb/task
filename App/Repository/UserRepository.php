@@ -129,4 +129,24 @@ class UserRepository
         }
     }
 
+    /**
+     * Méthode qui met à jour l'image de profil
+     * @param User Objet User
+     * @return void
+     */
+    public function updateImage(User $user)
+    {
+        try {
+            $email = $user->getEmail();
+            $img = $user->getImg();
+            $request = "UPDATE users SET img = ? WHERE email = ?";
+            $req = $this->connection->prepare($request);
+            $req->bindParam(1, $img, \PDO::PARAM_STR);
+            $req->bindParam(2, $email, \PDO::PARAM_STR);
+            $req->execute();
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+    
 }
