@@ -148,5 +148,28 @@ class UserRepository
             throw new \Exception($e->getMessage());
         }
     }
-    
+
+    /**
+     * Méthode qui met à jour les informations du profil
+     * @param User $user Objet User avec les paramètres à mettre à jour
+     * @param string $oldEmail ancien email pour trouver le compte à update
+     * @return void
+     */
+    public function updateInformation(User $user, string $oldEmail)
+    {
+        try {
+            $email = $user->getEmail();
+            $firstname = $user->getFirstname();
+            $lastname = $user->getLastname();
+            $request = "UPDATE users SET firstname = ?, lastname = ?, email = ? WHERE email = ?";
+            $req = $this->connection->prepare($request);
+            $req->bindParam(1, $firstname, \PDO::PARAM_STR);
+            $req->bindParam(2, $lastname, \PDO::PARAM_STR);
+            $req->bindParam(3, $email, \PDO::PARAM_STR);
+            $req->bindParam(4, $oldEmail, \PDO::PARAM_STR);
+            $req->execute();
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
 }
