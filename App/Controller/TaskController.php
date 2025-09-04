@@ -15,14 +15,12 @@ class TaskController {
     private readonly CategoryRepository $categoryRepository;
     private readonly UserRepository $userRepository;
     private readonly TaskRepository $taskRepository;
-    private Task $task;
 
     public function __construct()
     {
         $this->categoryRepository = new CategoryRepository();
         $this->userRepository = new UserRepository();
         $this->taskRepository = new TaskRepository();
-        $this->task = new Task();
     }
 
     public function addTask() {
