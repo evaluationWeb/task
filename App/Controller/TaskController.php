@@ -129,8 +129,7 @@ class TaskController {
         $idUser = $_SESSION["id"];
         $user = new User();
         $user->setIdUser($idUser);
-        $this->task->setUser($user);
-        $tasks = $this->task->findAllTaskHydrate();
+        $tasks = $this->taskRepository->findAllTaskHydrate($user);
         dd($tasks);
     }
 }
