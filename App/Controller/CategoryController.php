@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Model\Category;
 use App\Repository\CategoryRepository;
-use App\Utils\Utilitaire;
+use App\Utils\Tools;
 
 class CategoryController
 {
@@ -23,7 +23,7 @@ class CategoryController
         //Test si le message existe
         if (isset($_GET["message"])) {
             //Récupération et sanitize du message
-            $message = Utilitaire::sanitize($_GET["message"]);
+            $message = Tools::sanitize($_GET["message"]);
             //refresh de la page au bout de 1 seconde et demie
             header("Refresh:4; url=/task/category/all");
         }
@@ -41,7 +41,7 @@ class CategoryController
             //tester si le champs est non vide
             if (!empty($_POST["name"])) {
                 //nettoyer les informations
-                $name = Utilitaire::sanitize($_POST["name"]);
+                $name = Tools::sanitize($_POST["name"]);
                 //Créer un Objet Category
                 $category = new Category();
                 //Setter le nom
@@ -66,7 +66,7 @@ class CategoryController
     public function removeCategory()
     {
         if (isset($_GET["id"])) {
-            $id = Utilitaire::sanitize($_GET["id"]);
+            $id = Tools::sanitize($_GET["id"]);
             $this->categoryRepository->deleteCategory($id);
             header('Location: /task/category/all?message=La catégorie a été supprimé');
         }
@@ -84,8 +84,8 @@ class CategoryController
                 header('Location: /task/category/all?message=Veuillez remplir tous les champs');
             }
             //nettoyage des informations
-            $name = Utilitaire::sanitize($_POST["name"]);
-            $id = Utilitaire::sanitize($_POST["id"]);
+            $name = Tools::sanitize($_POST["name"]);
+            $id = Tools::sanitize($_POST["id"]);
             $category = new Category();
             //set du name et ID
             $category->setName($name);
@@ -101,7 +101,7 @@ class CategoryController
             header('Location: /task/category/all?message=la categorie a été mise à jour');
         } else {
             //sanitize de l'id 
-            $id = Utilitaire::sanitize($_POST["id"]);
+            $id = Tools::sanitize($_POST["id"]);
             //récupération de la précédente valeur de la catégorie
             $cat = $this->categoryRepository->findCategory($id);
         }

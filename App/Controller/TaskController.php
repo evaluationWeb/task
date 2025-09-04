@@ -8,7 +8,7 @@ use App\Model\task;
 use App\Repository\CategoryRepository;
 use App\Repository\UserRepository;
 use App\Repository\TaskRepository;
-use App\Utils\Utilitaire;
+use App\Utils\Tools;
 
 class TaskController {
 
@@ -29,8 +29,8 @@ class TaskController {
             
             if( !empty($_POST["title"]) && !empty($_POST["description"]) && !empty($_POST["endDate"])) {
                 $endDate = $_POST["endDate"];
-                $title = Utilitaire::sanitize($_POST["title"]);
-                $description = Utilitaire::sanitize($_POST["description"]);
+                $title = Tools::sanitize($_POST["title"]);
+                $description = Tools::sanitize($_POST["description"]);
                 //récupération des categories
                 $categories = $_POST["categories"];
 
@@ -60,7 +60,7 @@ class TaskController {
     }
 
     public function showAllTask() {
-        $idUser = Utilitaire::sanitize($_SESSION["id"]);
+        $idUser = Tools::sanitize($_SESSION["id"]);
         $user = new User();
         $user->setIdUser($idUser);
         $tasks = $this->taskRepository->findAllTask($user);
@@ -71,14 +71,14 @@ class TaskController {
 
     public function modifyTask() {
         $categories = $this->categoryRepository->findAllCategory();
-        $id = Utilitaire::sanitize($_POST["id"]);
+        $id = Tools::sanitize($_POST["id"]);
         
         if( isset($_POST["submit"])) {
             
             if( !empty($_POST["title"]) && !empty($_POST["description"]) && !empty($_POST["endDate"])) {
                 $endDate = $_POST["endDate"];
-                $title = Utilitaire::sanitize($_POST["title"]);
-                $description = Utilitaire::sanitize($_POST["description"]);
+                $title = Tools::sanitize($_POST["title"]);
+                $description = Tools::sanitize($_POST["description"]);
                 //récupération des categories
                 $categories = $_POST["categories"];
 
@@ -103,7 +103,7 @@ class TaskController {
         }
         else{
             //sanitize de l'id 
-            $id = Utilitaire::sanitize($_POST["id"]);
+            $id = Tools::sanitize($_POST["id"]);
             //récupération de la précédente valeur de la catégorie
             $task = $this->taskRepository->findTaskById($id);
            
@@ -113,7 +113,7 @@ class TaskController {
 
     public function terminateTask() {
         if (isset($_POST["valider"])) {
-            $idTask = Utilitaire::sanitize($_POST["id"]);
+            $idTask = Tools::sanitize($_POST["id"]);
             $task = new Task();
             $task->setIdTask($idTask);
             $this->taskRepository->validateTask($task);

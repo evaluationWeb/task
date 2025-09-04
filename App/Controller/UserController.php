@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Model\User;
 use App\Repository\UserRepository;
 use App\Service\EmailService;
-use App\Utils\Utilitaire;
+use App\Utils\Tools;
 
 class UserController
 {
@@ -30,14 +30,14 @@ class UserController
         if (isset($_POST["submit"])) {
             if (!empty($_POST["firstname"]) && !empty($_POST["lastname"]) && !empty($_POST["email"]) && !empty($_POST["password"])) {
                 $user = new User();
-                $email = Utilitaire::sanitize($_POST["email"]);
+                $email = Tools::sanitize($_POST["email"]);
                 $user->setEmail($email);
 
                 if (!$this->userRepository->isUserByEmailExist($user)) {
                     //Sanitize des autres valeur
-                    $firstname = Utilitaire::sanitize($_POST["firstname"]);
-                    $lastname = Utilitaire::sanitize($_POST["lastname"]);
-                    $password = Utilitaire::sanitize($_POST["password"]);
+                    $firstname = Tools::sanitize($_POST["firstname"]);
+                    $lastname = Tools::sanitize($_POST["lastname"]);
+                    $password = Tools::sanitize($_POST["password"]);
                     //Test si l'utilisateur à ajouter une image
                     if (!empty($_FILES["img"]["tmp_name"])) {
 
@@ -46,7 +46,7 @@ class UserController
                         //récupération de nom par défault
                         $defaultName = $_FILES["img"]["name"];
                         //récupération du format de l'image
-                        $format = Utilitaire::getFileExtension($defaultName);
+                        $format = Tools::getFileExtension($defaultName);
                         //nouveau nom 
                         $newImgName = uniqid("user") . $firstname . $lastname . "." . $format;
                         //enregistrement de l'image
@@ -89,8 +89,8 @@ class UserController
         $message = "";
         if (isset($_POST["submit"])) {
             if (!empty($_POST["email"]) && !empty($_POST["password"])) {
-                $email = Utilitaire::sanitize($_POST["email"]);
-                $password = Utilitaire::sanitize($_POST["password"]);
+                $email = Tools::sanitize($_POST["email"]);
+                $password = Tools::sanitize($_POST["password"]);
                 $user = new User();
                 $user->setEmail($email);
                 $user->setPassword($password);
@@ -142,7 +142,7 @@ class UserController
     public function showUserProfile()
     {
         //Récupération et nettoyage de la super globale session
-        $email = Utilitaire::sanitize($_SESSION["email"]);
+        $email = Tools::sanitize($_SESSION["email"]);
 
         //setter l'email à l'objet User
         $user = new User();
@@ -167,10 +167,10 @@ class UserController
             //Test si tous les champs sont remplis
             if (!empty($_POST["oldPassword"]) && !empty($_POST["newPassword"]) && !empty($_POST["confirmPassword"])) {
                 //récupération et nettoyage des informations
-                $oldPassword = Utilitaire::sanitize($_POST["oldPassword"]);
-                $newPassword = Utilitaire::sanitize($_POST["newPassword"]);
-                $confirmPassword = Utilitaire::sanitize($_POST["confirmPassword"]);
-                $email = Utilitaire::sanitize($_SESSION["email"]);
+                $oldPassword = Tools::sanitize($_POST["oldPassword"]);
+                $newPassword = Tools::sanitize($_POST["newPassword"]);
+                $confirmPassword = Tools::sanitize($_POST["confirmPassword"]);
+                $email = Tools::sanitize($_SESSION["email"]);
                 //Test si les 2 nouveaux mots de passe sont identiques
                 if ($newPassword === $confirmPassword) {
                     //set de l'email
@@ -228,10 +228,10 @@ class UserController
                 //récupération de nom par défault
                 $defaultName = $_FILES["img"]["name"];
                 //récupération du format de l'image
-                $format = Utilitaire::getFileExtension($defaultName);
+                $format = Tools::getFileExtension($defaultName);
                 //set de l'email
                 $user = new User();
-                $user->setEmail(Utilitaire::sanitize($_SESSION["email"]));
+                $user->setEmail(Tools::sanitize($_SESSION["email"]));
                 //récupération des informations de l'utilisateur
                 $userConnected = $this->userRepository->findUserByEmail($user);
                 $newImgName = uniqid("user") . $userConnected->getFirstname() . $userConnected->getLastname() . "." . $format;
@@ -265,15 +265,15 @@ class UserController
         //Test si le formulaire est submit
         if (isset($_POST["submit"])) {
             $user = new User();
-            $user->setEmail(Utilitaire::sanitize($_SESSION["email"]));
+            $user->setEmail(Tools::sanitize($_SESSION["email"]));
             $oldUserInfo = $this->userRepository->findUserByEmail($user);
             //Test si les champs sont remplis
             if (!empty($_POST["firstname"]) && !empty($_POST["firstname"]) && !empty($_POST["lastname"])) {
                 //récupération et nettoyage des informations
-                $firstname = Utilitaire::sanitize($_POST["firstname"]);
-                $lastname = Utilitaire::sanitize($_POST["lastname"]);
-                $email = Utilitaire::sanitize($_POST["email"]);
-                $oldEmail = Utilitaire::sanitize($_SESSION["email"]);
+                $firstname = Tools::sanitize($_POST["firstname"]);
+                $lastname = Tools::sanitize($_POST["lastname"]);
+                $email = Tools::sanitize($_POST["email"]);
+                $oldEmail = Tools::sanitize($_SESSION["email"]);
                 //set de l'email
                 $user->setEmail($email);
                 //test si l'email n'existe pas déja
@@ -301,7 +301,7 @@ class UserController
         } else {
             $user = new User();
             //Récupération des anciennes valeurs
-            $user->setEmail(Utilitaire::sanitize($_SESSION["email"]));
+            $user->setEmail(Tools::sanitize($_SESSION["email"]));
             $oldUserInfo = $this->userRepository->findUserByEmail($user);
         }
 
@@ -320,7 +320,7 @@ class UserController
             //Test si l'email est renseigné
             if (!empty($_POST["email"])) {
                 //Nettoyage du champ
-                $email = Utilitaire::sanitize($_POST["email"]);
+                $email = Tools::sanitize($_POST["email"]);
                 //Timestamp pour la durée de vie du lien
                 $date = new \DateTimeImmutable();
                 $dateValidity = $date->getTimestamp();
@@ -354,9 +354,9 @@ class UserController
         //test si les paramètres GET existent
         if (isset($_GET["email"]) && isset($_GET["validity"])) {
             //Nettoyage du hash de l'email (GET)
-            $hashEmail = Utilitaire::sanitize($_GET["email"]);
+            $hashEmail = Tools::sanitize($_GET["email"]);
             //Nettoyage de la date de validitée (GET)
-            $dateValidity = (int) Utilitaire::sanitize($_GET["validity"]);
+            $dateValidity = (int) Tools::sanitize($_GET["validity"]);
             //test si le formulaire est submit
             if (isset($_POST["submit"])) {
                 //test si les champs sont tous renseignés
@@ -373,7 +373,7 @@ class UserController
                         //test si l'email est valide
                         if ($this->userRepository->isUserByHashEmailExist($user)) {
                             //récupération et nettoyage du password
-                            $newPassword = Utilitaire::sanitize($_POST["newPassword"]);
+                            $newPassword = Tools::sanitize($_POST["newPassword"]);
                             //set du password au User
                             $user->setPassword($newPassword);
                             //hash du password

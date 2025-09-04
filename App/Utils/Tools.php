@@ -2,7 +2,7 @@
 
 namespace App\Utils;
 
-class Utilitaire {
+class Tools {
 
     /**
      * Méthode pour Supprimer les balises + les caractères spéciaux, suppression des espaces
