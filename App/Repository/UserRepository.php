@@ -203,5 +203,23 @@ class UserRepository
         }
     }
 
-    
+    /**
+     * Méthode qui remplace le mot de passe du compte dont le hash de l'email en MD5 est correct
+     * @param User $user Objet User
+     * @return void
+     */
+    public function updateForgotPassword(User $user)
+    {
+        try {
+            $email = $user->getEmail();
+            $password = $user->getPassword();
+            $request = "UPDATE users SET password = ? WHERE md5(email) = ?";
+            $req = $this->connection->prepare($request);
+            $req->bindParam(1, $password, \PDO::PARAM_STR);
+            $req->bindParam(2, $email, \PDO::PARAM_STR);
+            $req->execute();
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
 }
