@@ -50,7 +50,7 @@ class TaskRepository
             $idTask = (int) $this->connection->lastInsertId('task');
 
             //Test si la liste des taches posséde des categories
-            if (!empty($this->categories)) {
+            if (!empty($categories)) {
                 //Création de la requête pour chaque enregistrement (table asssociation task_category)
                 $requestTaskCategory = "INSERT INTO task_category(id_task, id_category) VALUES ";
 
