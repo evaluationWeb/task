@@ -257,6 +257,7 @@ class TaskRepository
 
     /**
      * Méthode qui valide une Task
+     * @param Task $task
      * @Return void
      */
     public function validateTask(Task $task) {
