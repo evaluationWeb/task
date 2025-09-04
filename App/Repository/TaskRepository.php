@@ -272,4 +272,31 @@ class TaskRepository
             throw new \Exception($e->getMessage());
         }
     }
+
+    /**
+     * Méthode qui récupérer toute les taches hydratées
+     * @param Task $task
+     * @return array<Task>
+     */
+    public function findAllTaskHydrate(User $user) : array {
+        try {
+            $idUser = $user->getIdUser();
+            $request = "SELECT t.id_task AS idTask, t.title, t.description, t.created_at, 
+            t.end_date, t.status, t.id_users, u.firstname, u.lastname, 
+            GROUP_CONCAT(c.id_category) categoriesId,
+            GROUP_CONCAT(c.name) categoriesName
+            FROM task AS t INNER JOIN users AS u            
+            ON t.id_users = u.id_users LEFT JOIN task_category AS tc
+            ON t.id_task = tc.id_task INNER JOIN category AS c
+            ON tc.id_category = c.id_category
+            WHERE t.status = 0 AND u.id_users = ? GROUP BY idTask ";
+            $req = $this->connection->prepare($request);
+            $req->bindParam(1,$idUser, \PDO::PARAM_INT );
+            $req->execute();
+            $data = $req->fetchAll(\PDO::FETCH_CLASS, Task::class);
+            return $data;
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
 }
