@@ -108,4 +108,25 @@ class UserRepository
             throw new \Exception($e->getMessage());
         }
     }
+
+        /**
+     * Méthode qui met à jour le mot de passe du compte en BDD
+     * @param User Objet User
+     * @return void
+     */
+    public function updatePassword(User $user)
+    {
+        try {
+            $email = $user->getEmail();
+            $password = $user->getPassword();
+            $request = "UPDATE users SET password = ? WHERE email = ?";
+            $req = $this->connection->prepare($request);
+            $req->bindParam(1, $password, \PDO::PARAM_STR);
+            $req->bindParam(2, $email, \PDO::PARAM_STR);
+            $req->execute();
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
 }
