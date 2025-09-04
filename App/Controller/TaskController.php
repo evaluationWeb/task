@@ -13,13 +13,11 @@ use App\Utils\Utilitaire;
 class TaskController {
 
     private readonly CategoryRepository $categoryRepository;
-    private readonly UserRepository $userRepository;
     private readonly TaskRepository $taskRepository;
 
     public function __construct()
     {
         $this->categoryRepository = new CategoryRepository();
-        $this->userRepository = new UserRepository();
         $this->taskRepository = new TaskRepository();
     }
 
