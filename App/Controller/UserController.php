@@ -145,10 +145,11 @@ class UserController
         $email = Utilitaire::sanitize($_SESSION["email"]);
 
         //setter l'email à l'objet User
-        $this->user->setEmail($email);
+        $user = new User();
+        $user->setEmail($email);
 
         //Récupération du compte 
-        $userConnected = $this->user->findUserByEmail();
+        $userConnected = $this->userRepository->findUserByEmail($user);
 
         //Retourne la vue HTML
         include_once "App/View/viewUserProfil.php";
