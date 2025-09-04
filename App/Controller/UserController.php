@@ -62,6 +62,7 @@ class UserController
                     $user->setLastname($lastname);
                     $user->setPassword($password);
                     $user->hashPassword();
+                    $user->addGrant("ROLE_USER");
                     //ajoute le compte en BDD
                     $this->userRepository->saveUser($user);
                     $message = "Le compte : " . $user->getEmail() . " a été ajouté en BDD";
