@@ -71,7 +71,8 @@ SMTP::DEBUG_OFF
 
 - 9 Créer une nouvelle route dans **index.php**
 
-**Mise à jour majeure ** :
+**Mise à jour majeure** :
+
 Ajout d'un Système des droits sur les routes
 
 Exemple :
