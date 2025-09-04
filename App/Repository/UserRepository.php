@@ -29,22 +29,31 @@ class UserRepository
             $email = $user->getEmail();
             $password = $user->getPassword();
             $img = $user->getImg();
-            $request = "INSERT INTO users(firstname, lastname, email, password, img) VALUE (?,?,?,?,?)";
+            $grants = $user->getGrants();
+            $grants = implode(",",$grants);
+            
+            //Requête SQL
+            $request = "INSERT INTO users(firstname, lastname, email, password, img, grants) VALUE (?,?,?,?,?,?)";
 
             //prépararation de la requête
             $req = $this->connection->prepare($request);
+
             //bind param
             $req->bindParam(1, $firstname, \PDO::PARAM_STR);
             $req->bindParam(2, $lastname, \PDO::PARAM_STR);
             $req->bindParam(3, $email, \PDO::PARAM_STR);
             $req->bindParam(4, $password, \PDO::PARAM_STR);
             $req->bindParam(5, $img, \PDO::PARAM_STR);
+            $req->bindParam(6, $grants, \PDO::PARAM_STR);
+            
             //éxécution de la requête
             $req->execute();
+            
             //récupération de l'id
             $id = $this->connection->lastInsertId('users');
             //set id et retourner l'utilisateur
             $user->setIdUser($id);
+            
             //Retourne l'Objet User
             return $user;
         } catch (\Exception $e) {
@@ -93,7 +102,7 @@ class UserRepository
             //Récupération de la valeur de name (category)
             $email = $user->getEmail();
             //Ecrire la requête SQL
-            $request = "SELECT u.id_users AS idUser, u.firstname, u.lastname, u.password , u.img, u.email FROM users AS u WHERE u.email = ?";
+            $request = "SELECT u.id_users AS idUser, u.firstname, u.lastname, u.password , u.img, u.email, u.grants FROM users AS u WHERE u.email = ?";
             //préparer la requête
             $req = $this->connection->prepare($request);
             //assigner le paramètre
