@@ -39,27 +39,26 @@ class TaskController {
                 $categories = $_POST["categories"];
 
                 //Assignation de valeurs à l'objet Task
-                $this->task->setTitle($title);
-                $this->task->setDescription($description);
+                $task = new Task();
+                $task->setTitle($title);
+                $task->setDescription($description);
                 $endDate = new \DateTimeImmutable($endDate);
-                $this->task->setEndDate($endDate);
-                $this->task->setStatus(false);
+                $task->setEndDate($endDate);
+                $task->setStatus(false);
                 $user = new User();
                 $user->setIdUser($userId);
-                $this->task->setUser($user);
+                $task->setUser($user);
                 foreach ($categories as $category) {
                     $cat = (new Category())->setIdCategory($category);
-                    $this->task->addCategory($cat);
+                    $task->addCategory($cat);
                 }
-                $task = $this->task->saveTask();
+                $this->taskRepository->saveTask($task);
                 
                 $message = "La tache a été ajouté";
 
             } else {
                 $message = "Veuillez remplir tous les champs du formulaire";
             }
-            
-           
         }
         include_once "App/View/viewAddTask.php";
     }
