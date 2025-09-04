@@ -64,12 +64,11 @@ class TaskController {
     }
 
     public function showAllTask() {
-        $idUser = $_SESSION["id"];
+        $idUser = Utilitaire::sanitize($_SESSION["id"]);
         $user = new User();
         $user->setIdUser($idUser);
-        $this->task->setUser($user);
-        $tasks = $this->task->findAllTask();
-        //dd($tasks);
+        $tasks = $this->taskRepository->findAllTask($user);
+        //retourner la vue
         include_once "App/View/viewAllTask.php";
     }
 
