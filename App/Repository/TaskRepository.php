@@ -7,7 +7,7 @@ use App\Model\Task;
 use App\Model\User;
 use App\Model\Category;
 
-class TaskRepository 
+class TaskRepository
 {
     private readonly \PDO $connection;
 
@@ -103,12 +103,12 @@ class TaskRepository
             GROUP_CONCAT(c.id_category) AS categoriesId,
             GROUP_CONCAT(c.name) AS categoriesName
             FROM task AS t INNER JOIN users AS u            
-            ON t.id_users = u.id_users LEFT JOIN task_category AS tc
+            ON t.id_users = u.id_users INNER JOIN task_category AS tc
             ON t.id_task = tc.id_task INNER JOIN category AS c
             ON tc.id_category = c.id_category
             WHERE t.status = 0 AND u.id_users = ? GROUP BY idTask ";
             $req = $this->connection->prepare($request);
-            $req->bindParam(1,$idUser, \PDO::PARAM_INT );
+            $req->bindParam(1, $idUser, \PDO::PARAM_INT);
             $req->execute();
             $data = $req->fetchAll(\PDO::FETCH_ASSOC);
             $tasks = [];
@@ -140,7 +140,7 @@ class TaskRepository
         $endDate = new \DateTimeImmutable($value["endDate"]);
         $task->setCreatedAt($createdAt);
         $task->setEndDate($endDate);
-        if(isset($value["id_users"])) {
+        if (isset($value["id_users"])) {
             $user = new User();
             $user->setIdUser($value["id_users"]);
             $user->setLastname($value["lastname"]);
@@ -165,7 +165,7 @@ class TaskRepository
      * @param int $id 
      * @return void
      */
-    public function updateTask(Task $task,int $id): void
+    public function updateTask(Task $task, int $id): void
     {
         try {
             $idTask = $id;
@@ -193,7 +193,7 @@ class TaskRepository
             $req2->bindParam(1, $idTask, \PDO::PARAM_INT);
             $req2->execute();
             //Test si la liste des taches posséde des categories
-            if (!empty($this->categories)) {
+            if (!empty($task->getCategories())) {
                 //Création de la requête pour chaque enregistrement (table asssociation task_category)
                 $requestTaskCategory = "INSERT INTO task_category(id_task, id_category) VALUES ";
 
@@ -260,15 +260,15 @@ class TaskRepository
      * @param Task $task
      * @Return void
      */
-    public function validateTask(Task $task) {
+    public function validateTask(Task $task)
+    {
         try {
             $idTask = $task->getIdTask();
             $request = "UPDATE task set status = 1 WHERE id_task  = ?";
             $req = $this->connection->prepare($request);
             $req->bindParam(1, $idTask, \PDO::PARAM_INT);
             $req->execute();
-        
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
     }
@@ -278,7 +278,8 @@ class TaskRepository
      * @param Task $task
      * @return array<Task>
      */
-    public function findAllTaskHydrate(User $user) : array {
+    public function findAllTaskHydrate(User $user): array
+    {
         try {
             $idUser = $user->getIdUser();
             $request = "SELECT t.id_task AS idTask, t.title, t.description, t.created_at, 
@@ -291,7 +292,7 @@ class TaskRepository
             ON tc.id_category = c.id_category
             WHERE t.status = 0 AND u.id_users = ? GROUP BY idTask ";
             $req = $this->connection->prepare($request);
-            $req->bindParam(1,$idUser, \PDO::PARAM_INT );
+            $req->bindParam(1, $idUser, \PDO::PARAM_INT);
             $req->execute();
             $data = $req->fetchAll(\PDO::FETCH_CLASS, Task::class);
             return $data;

@@ -64,6 +64,7 @@ class TaskController {
         $user = new User();
         $user->setIdUser($idUser);
         $tasks = $this->taskRepository->findAllTask($user);
+        //dd($tasks);
         //retourner la vue
         include_once "App/View/viewAllTask.php";
     }
