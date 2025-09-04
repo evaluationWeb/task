@@ -1,7 +1,7 @@
 CREATE DATABASE IF NOT EXISTS tasks CHARSET utf8mb4;
 USE tasks;
 
--- création des tables
+-- tables
 CREATE TABLE IF NOT EXISTS users(
 id_users INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
 firstname VARCHAR(50) NOT NULL,
@@ -31,7 +31,7 @@ id_category INT,
 PRIMARY KEY(id_task, id_category)
 )ENGINE = InnoDB;
 
--- contraintes de clé étrangére
+-- contraintes
 ALTER TABLE task
 ADD CONSTRAINT fk_possess_users
 FOREIGN KEY(id_users)

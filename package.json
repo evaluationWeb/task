@@ -1,0 +1,23 @@
+{
+  "name": "task",
+  "version": "1.0.0",
+  "description": "Ce site est un projet d'exercice de cours d'une TODO List en PHP POO.",
+  "main": "index.js",
+  "scripts": {
+    "test": "cypress open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/evaluationWeb/task.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/evaluationWeb/task/issues"
+  },
+  "homepage": "https://github.com/evaluationWeb/task#readme",
+  "devDependencies": {
+    "cypress": "^15.1.0"
+  }
+}

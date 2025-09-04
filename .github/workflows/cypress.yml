@@ -1,0 +1,71 @@
+name: PHP 8 vanilla + Cypress E2E Tests
+
+on:
+    push:
+        branches: [ main ]
+    pull_request:
+        branches: [ main ]
+jobs:
+    Symfony-test:
+        runs-on: ubuntu-latest
+        # installation des services
+        services:
+            mysql:
+                image: mysql:8.0
+                env:
+                    MYSQL_ROOT_PASSWORD: root
+                    MYSQL_DATABASE: tasks
+                ports:
+                    - 3306:3306
+                options: >-
+                    --health-cmd="mysqladmin ping -h localhost"
+                    --health-interval=10s
+                    --health-timeout=5s
+                    --health-retries=5
+        steps:
+            # récupération du code du repository
+            - name: Checkout code
+              uses: actions/checkout@v4
+            
+            # configuration de PHP
+            - name: Set up PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                php-version: "8.2"
+                extensions: mbstring, intl, pdo_mysql, sodium
+                tools: composer  
+            
+            # paramétrage de l'environnement de test (fichier .env)
+            - name: Set up .env for CI
+              run: |
+                touch .env
+                echo '<?php
+                const BDD_LOGIN = "root";' >> .env
+                echo 'const BDD_PASSWORD = "root";' >> .env
+                echo 'const BDD_SERVER = "localhost:3306";' >> .env
+                echo 'const BDD_NAME = "tasks";' >> .env
+                echo 'const BASE_URL = "/task";' >> .env
+                echo 'const SMTP_SERVER = "smtp.laposte.net";' >> .env
+                echo 'const SMTP_PORT = 587;' >> .env
+                echo 'const SMTP_SECURITY = "tls";' >> .env
+                echo 'const SMTP_LOGIN = "xxxx@xxxxx.xxx";' >> .env
+                echo 'const SMTP_PASSWORD = "xxxxxxxxxxx";' >> .env
+            
+            # installation des dépendances PHP
+            - name: Install PHP dependencies
+              run: composer install --no-interaction --prefer-dist
+            
+            # migration de la base de données
+            - name: migration DB
+              run: |
+                mysql -u root -proot
+                SOURCE base.sql;
+            
+            # démarrage du serveur PHP
+            - name: Run PHP local server
+              run: |
+                php -S 127.0.0.1:8000 -t public &
+            
+            # Cypress Actions
+            - name : Test Cypress
+              uses: cypress-io/github-action@v6
