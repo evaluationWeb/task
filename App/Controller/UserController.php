@@ -105,6 +105,7 @@ class UserController
                         $_SESSION["email"] = $email;
                         $_SESSION["id"] = $userConnected->getIdUser();
                         $_SESSION["img"] = $userConnected->getImg();
+                        $_SESSION["grant"] = ["ROLE_PUBLIC","ROLE_USER"];
                         header('Location: /task');
                     } else {
                         $message = "Les informations de connexion ne sont pas correctes";

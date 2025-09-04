@@ -5,24 +5,25 @@ namespace App\Controller;
 use App\Model\Category;
 use App\Model\User;
 use App\Model\task;
+use App\Repository\CategoryRepository;
 use App\Utils\Utilitaire;
 
 class TaskController {
 
-    private Category $category;
+    private readonly CategoryRepository $categoryRepository;
     private User $user;
     private Task $task;
 
     public function __construct()
     {
-        $this->category = new Category();
+        $this->categoryRepository = new CategoryRepository();
         $this->user = new User();
         $this->task = new Task();
     }
 
     public function addTask() {
         $message  = "";
-        $categories = $this->category->findAllCategory();
+        $categories = $this->categoryRepository->findAllCategory();
         $userId = $_SESSION["id"];
         if( isset($_POST["submit"])) {
             
@@ -70,7 +71,7 @@ class TaskController {
     }
 
     public function modifyTask() {
-        $categories = $this->category->findAllCategory();
+        $categories = $this->categoryRepository->findAllCategory();
         $id = Utilitaire::sanitize($_POST["id"]);
         
         if( isset($_POST["submit"])) {
