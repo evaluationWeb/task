@@ -174,21 +174,22 @@ class UserController
                 //Test si les 2 nouveaux mots de passe sont identiques
                 if ($newPassword === $confirmPassword) {
                     //set de l'email
-                    $this->user->setEmail($email);
+                    $user = new User();
+                    $user->setEmail($email);
                     //Test si le compte existe
-                    if ($this->user->isUserByEmailExist()) {
+                    if ($this->userRepository->isUserByEmailExist($user)) {
                         //récupération du compte depuis son email
-                        $oldUser = $this->user->findUserByEmail();
+                        $oldUser = $this->userRepository->findUserByEmail($user);
                         //récupération de l'ancien hash
                         $oldHash = $oldUser->getPassword();
                         //test si l'ancien mot de passe est valide
                         if (password_verify($oldPassword, $oldHash)) {
                             //set du nouveau mot de passe
-                            $this->user->setPassword($newPassword);
+                            $user->setPassword($newPassword);
                             //Hash du nouveau mot de passe
-                            $this->user->hashPassword();
+                            $user->hashPassword();
                             //mise à jour du mot de passe
-                            $this->user->updatePassword();
+                            $this->userRepository->updatePassword($user);
                             $message = "Le mot de passe à été mis à jour";
                             header("Refresh:2; url=/task/user/deconnexion");
                         } else {
