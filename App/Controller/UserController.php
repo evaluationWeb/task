@@ -230,16 +230,17 @@ class UserController
                 //récupération du format de l'image
                 $format = Utilitaire::getFileExtension($defaultName);
                 //set de l'email
-                $this->user->setEmail(Utilitaire::sanitize($_SESSION["email"]));
+                $user = new User();
+                $user->setEmail(Utilitaire::sanitize($_SESSION["email"]));
                 //récupération des informations de l'utilisateur
-                $userConnected = $this->user->findUserByEmail();
+                $userConnected = $this->userRepository->findUserByEmail($user);
                 $newImgName = uniqid("user") . $userConnected->getFirstname() . $userConnected->getLastname() . "." . $format;
                 //enregistrement de l'image
                 move_uploaded_file($tmp, ".." . BASE_URL . "/public/image/" . $newImgName);
                 //set de l'image
-                $this->user->setImg($newImgName);
+                $user->setImg($newImgName);
                 //update du compte en BDD
-                $this->user->updateImage();
+                $this->userRepository->updateImage($user);
                 //mise à jour de la session
                 $_SESSION["img"] = $newImgName;
                 //message de confirmation et redirection
