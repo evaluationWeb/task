@@ -117,8 +117,9 @@ class TaskController {
     public function terminateTask() {
         if (isset($_POST["valider"])) {
             $idTask = Utilitaire::sanitize($_POST["id"]);
-            $this->task->setIdTask($idTask);
-            $this->task->validateTask();
+            $task = new Task();
+            $task->setIdTask($idTask);
+            $this->taskRepository->validateTask($task);
             header('Location: /task/task/all');
         }
         header('Location: /task/task/all');
