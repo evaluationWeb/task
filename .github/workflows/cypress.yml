@@ -1,7 +1,10 @@
-name: E2E avec MySQL + Apache + Cypress
+name: E2E avec PHP MySQL + Apache + Cypress
 
 on:
   push:
+    branches: [main, test, refacto]
+  pull_request:
+    branches: [main, test, refacto]
     paths:
       - "base.sql"
       - ".github/workflows/cypress.yml"
