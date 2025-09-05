@@ -25,6 +25,7 @@ class UserController
      */
     public function addUser()
     {
+        $base = (BASE_URL === "/") ? "" : BASE_URL;
         $message = "";
         //Test si le formulaire est submit
         if (isset($_POST["submit"])) {
@@ -50,7 +51,7 @@ class UserController
                         //nouveau nom 
                         $newImgName = uniqid("user") . $firstname . $lastname . "." . $format;
                         //enregistrement de l'image
-                        move_uploaded_file($tmp, ".." . BASE_URL . "/public/image/" . $newImgName);
+                        move_uploaded_file($tmp, ".." . $base . "/public/image/" . $newImgName);
                         //set name de l'image
                         $user->setImg($newImgName);
                     } else {
@@ -67,15 +68,15 @@ class UserController
                     $this->userRepository->saveUser($user);
                     //Message et redirection
                     $message = "Le compte : " . $user->getEmail() . " a été ajouté en BDD";
-                    header("Refresh:2; url=/task/user/register");
+                    header("Refresh:2; url=" . $base ."/user/register");
                 } else {
 
                     $message = "Le compte existe déja";
-                    header("Refresh:2; url=/task/user/register");
+                    header("Refresh:2; url=" . $base . "/user/register");
                 }
             } else {
                 $message = "Veuillez remplir tous les champs";
-                header("Refresh:2; url=/task/user/register");
+                header("Refresh:2; url=" . $base . "/user/register");
             }
         }
 
@@ -88,6 +89,7 @@ class UserController
      */
     public function connexion()
     {
+        $base = (BASE_URL === "/") ? "" : BASE_URL;
         $message = "";
         if (isset($_POST["submit"])) {
             if (!empty($_POST["email"]) && !empty($_POST["password"])) {
@@ -111,18 +113,18 @@ class UserController
                         //récupération de la liste de droits
                         $_SESSION["grant"] = $userConnected->getGrant();
                         //redirection vers accueil connecté
-                        header('Location: /task');
+                        header('Location: ' . BASE_URL . '');
                     } else {
                         $message = "Les informations de connexion ne sont pas correctes";
-                        header("Refresh:2; url=/task/user/connexion");
+                        header("Refresh:2; url=" . $base . "/user/connexion");
                     }
                 } else {
                     $message = "Les informations de connexion ne sont pas correctes";
-                    header("Refresh:2; url=/task/user/connexion");
+                    header("Refresh:2; url=" . $base . "/user/connexion");
                 }
             } else {
                 $message = "Veuillez remplir les champs";
-                header("Refresh:2; url=/task/user/connexion");
+               header("Refresh:2; url=" . $base . "/user/connexion");
             }
         }
         include_once "App/View/viewConnexion.php";
@@ -164,7 +166,8 @@ class UserController
      * de l'utilisateur connecté
      */
     public function modifyPassword()
-    {
+    {   
+        $base = (BASE_URL === "/") ? "" : BASE_URL;
         //Test si le formulaire est soumis
         if (isset($_POST["submit"])) {
             //Test si tous les champs sont remplis
@@ -194,22 +197,22 @@ class UserController
                             //mise à jour du mot de passe
                             $this->userRepository->updatePassword($user);
                             $message = "Le mot de passe à été mis à jour";
-                            header("Refresh:2; url=/task/user/deconnexion");
+                            header("Refresh:2; url=" .  $base ."/user/deconnexion");
                         } else {
                             $message = "L'ancien mot de passe est incorrect";
-                            header("Refresh:2; url=/task/user/update/password");
+                            header("Refresh:2; url=" . $base . "/user/update/password");
                         }
                     } else {
                         $message = "Le compte n'existe pas";
-                        header("Refresh:2; url=/task/user/deconnexion");
+                        header("Refresh:2; url=" .  $base ."/user/deconnexion");
                     }
                 } else {
                     $message = "Les 2 nouveaux mots de passe ne correspondent pas";
-                    header("Refresh:2; url=/task/user/update/password");
+                    header("Refresh:2; url=" . $base . "/user/update/password");
                 }
             } else {
                 $message = "Veuillez remplir tous les champs du formulaire";
-                header("Refresh:2; url=/task/user/update/password");
+                 header("Refresh:2; url=" . $base . "/user/update/password");
             }
         }
         include_once "App/View/viewModifyPassword.php";
@@ -222,6 +225,7 @@ class UserController
      */
     public function modifyImage()
     {
+        $base = (BASE_URL === "/") ? "" : BASE_URL;
         //test si le formulaire est soumis
         if (isset($_POST["submit"])) {
             //test si l'image existe
@@ -248,10 +252,10 @@ class UserController
                 $_SESSION["img"] = $newImgName;
                 //message de confirmation et redirection
                 $message = "Image mise à jour";
-                header("Refresh:1; url=/task/user/profil");
+                header("Refresh:1; url=" . $base . "/user/profil");
             } else {
                 $message = "Veuillez sélectionner une image";
-                header("Refresh:2; url=/task/user/update/img");
+                header("Refresh:2; url=" . $base . "/user/update/img");
             }
         }
 
@@ -265,6 +269,7 @@ class UserController
      */
     public function modifyInfo()
     {
+        $base = (BASE_URL === "/") ? "" : BASE_URL;
         //Test si le formulaire est submit
         if (isset($_POST["submit"])) {
             $user = new User();
@@ -283,7 +288,7 @@ class UserController
                 if ($email != $oldEmail && $this->userRepository->isUserByEmailExist($user)) {
 
                     $message = "Attention l'email existe déja en BDD";
-                    header("Refresh:1; url=/task/user/profil");
+                    header("Refresh:1; url=" . $base . "/user/profil");
                 } else {
                     //set du prénon et du nom
                     $user->setFirstname($firstname);
@@ -295,11 +300,11 @@ class UserController
                     $oldUserInfo = $this->userRepository->findUserByEmail($user);
                     //Message de confirmation et redirection
                     $message = "Le compte a été mis à jour";
-                    header("Refresh:1; url=/task/user/profil");
+                    header("Refresh:1; url=" . $base . "/user/profil");
                 }
             } else {
                 $message = "Veuillez renseigner tous les champs";
-                header("Refresh:1; url=/task/user/update/info");
+                header("Refresh:1; url=" . $base . "/user/update/info");
             }
         } else {
             $user = new User();
@@ -318,6 +323,7 @@ class UserController
      */
     public function recoverPassword()
     {
+        $base = (BASE_URL === "/") ? "" : BASE_URL;
         //Test si le fomulaire est soumis
         if (isset($_POST["submit"])) {
             //Test si l'email est renseigné
@@ -328,7 +334,7 @@ class UserController
                 $date = new \DateTimeImmutable();
                 $dateValidity = $date->getTimestamp();
                 $hashEmail = md5($email);
-                $link = "http://localhost" . BASE_URL . "/user/password/generate?email=$hashEmail&validity=$dateValidity";
+                $link = "http://localhost" . $base . "/user/password/generate?email=$hashEmail&validity=$dateValidity";
                 //composants de l'email à envoyer
                 $receiver = $email;
                 $subject = "Recuperation du password";
@@ -354,6 +360,7 @@ class UserController
      */
     public function regeneratePassword()
     {
+         $base = (BASE_URL === "/") ? "" : BASE_URL;
         //test si les paramètres GET existent
         if (isset($_GET["email"]) && isset($_GET["validity"])) {
             //Nettoyage du hash de l'email (GET)
@@ -385,7 +392,7 @@ class UserController
                             $this->userRepository->updateForgotPassword($user);
                             //Message de confirmation et redirection
                             $message = "Le mot de passe à été modifié";
-                            header("Refresh:2; url=" . BASE_URL . "/user/connexion");
+                            header("Refresh:2; url=" . $base . "/user/connexion");
                         }
                         //Sinon on arrête
                         else {

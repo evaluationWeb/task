@@ -25,7 +25,8 @@ class CategoryController
             //Récupération et sanitize du message
             $message = Tools::sanitize($_GET["message"]);
             //refresh de la page au bout de 1 seconde et demie
-            header("Refresh:4; url=/task/category/all");
+            $base = (BASE_URL === "/") ? "" : BASE_URL;
+            header("Refresh:4; url=" . $base . "/category/all");
         }
         //tableau des catégories
         $categories = $this->categoryRepository->findAllCategory();
@@ -50,8 +51,9 @@ class CategoryController
                 if (!$this->categoryRepository->isCategoryByNameExist($category)) {
                     //ajouter la category en BDD
                     $this->categoryRepository->saveCategory($category);
+                    $base = (BASE_URL === "/") ? "" : BASE_URL;
                     //redirection vers la liste des categories avec un paramètre GET
-                    header("Location: /task/category/all?message=La category " . $name . " a été ajouté en BDD");
+                    header("Location: " . $base . "/category/all?message=La category " . $name . " a été ajouté en BDD");
                 } else {
                     $message = "La categorie existe déja";
                 }
@@ -64,24 +66,26 @@ class CategoryController
     }
 
     public function removeCategory()
-    {
+    {   
+        $base = (BASE_URL === "/") ? "" : BASE_URL;
         if (isset($_GET["id"])) {
             $id = Tools::sanitize($_GET["id"]);
             $this->categoryRepository->deleteCategory($id);
-            header('Location: /task/category/all?message=La catégorie a été supprimé');
+            
+            header('Location: ' . $base . '/category/all?message=La catégorie a été supprimé');
         }
-        header('Location: /task/category/all');
+        header('Location: ' . $base . '/category/all');
     }
     
     public function modifyCategory()
     {
-
+        $base = (BASE_URL === "/") ? "" : BASE_URL;
         //test si le formulaire est submit
         if (isset($_POST["submit"])) {
             //Test si le champ est vide
             if (empty($_POST["name"])) {
                 //redirection à la liste des catégorie avec un message
-                header('Location: /task/category/all?message=Veuillez remplir tous les champs');
+                header('Location: ' . $base . '/category/all?message=Veuillez remplir tous les champs');
             }
             //nettoyage des informations
             $name = Tools::sanitize($_POST["name"]);
@@ -93,12 +97,12 @@ class CategoryController
             //Test si la catégorie existe déja (éviter les doublons)
             if ($this->categoryRepository->isCategoryByNameExist($category)) {
                 //redirection à la liste des catégorie avec un message
-                header('Location: /task/category/all?message=Aucune mise à jour');
+                header('Location: ' . $base . '/category/all?message=Aucune mise à jour');
             }
             //Mise à jour de la catégorie
             $this->categoryRepository->updateCategory($category);
             //redirection à la liste des catégorie avec un message
-            header('Location: /task/category/all?message=la categorie a été mise à jour');
+            header('Location: ' . $base . '/category/all?message=Aucune mise à jour');
         } else {
             //sanitize de l'id 
             $id = Tools::sanitize($_POST["id"]);

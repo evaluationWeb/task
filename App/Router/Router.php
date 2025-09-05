@@ -123,6 +123,7 @@ class Router
         $url = parse_url($_SERVER['REQUEST_URI']);
         //test si l'url posséde une route sinon on renvoi à la racine
         $path = $url['path'] ??  '/';
+        //Test si la BASE_URL est /
         if (BASE_URL != "/") {
             $path = substr($path, strlen(BASE_URL));
         }

@@ -6,7 +6,6 @@ use App\Model\Category;
 use App\Model\User;
 use App\Model\task;
 use App\Repository\CategoryRepository;
-use App\Repository\UserRepository;
 use App\Repository\TaskRepository;
 use App\Utils\Tools;
 
@@ -70,6 +69,7 @@ class TaskController {
     }
 
     public function modifyTask() {
+        $base = (BASE_URL === "/") ? "" : BASE_URL;
         $categories = $this->categoryRepository->findAllCategory();
         $id = Tools::sanitize($_POST["id"]);
         
@@ -95,10 +95,10 @@ class TaskController {
                 }
                 $this->taskRepository->updateTask($task,$id);
                 
-               header('Location: /task/task/all');
+               header('Location: ' . $base . '/task/all');
 
             } else {
-                header('Location: /task/task/all');
+                header('Location: ' . $base . '/task/all');
             }
         }
         else{
@@ -112,14 +112,15 @@ class TaskController {
     }
 
     public function terminateTask() {
+        $base = (BASE_URL === "/") ? "" : BASE_URL;
         if (isset($_POST["valider"])) {
             $idTask = Tools::sanitize($_POST["id"]);
             $task = new Task();
             $task->setIdTask($idTask);
             $this->taskRepository->validateTask($task);
-            header('Location: /task/task/all');
+            header('Location: ' . $base . '/task/task/all');
         }
-        header('Location: /task/task/all');
+        header('Location: ' . $base . '/task/task/all');
     }
 
     public function showAllTaskHydrate() {
