@@ -10,9 +10,9 @@ Le repository contient les corrections de celui-ci.
 
 https://github.com/evaluationWeb/task/archive/refs/tags/v1.zip
 
-*Le code actuel est basé sur la dernière **release v3** :*
+*Le code actuel est basé sur la dernière **release v4** :*
 
-https://github.com/evaluationWeb/task/archive/refs/tags/v3.zip
+https://github.com/evaluationWeb/task/archive/refs/tags/v4.zip
 
 **Prérequis** :
 - PHP 8.2 +,
