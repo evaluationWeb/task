@@ -1,13 +1,10 @@
-name: E2E avec PHP MySQL + Apache + Cypress
+name: E2E avec MySQL + Apache + Cypress
 
 on:
   push:
-    branches: [main, test, refacto]
+    branches: [ "test" ]
   pull_request:
-    branches: [main, test, refacto]
-    paths:
-      - "base.sql"
-      - ".github/workflows/cypress.yml"
+    branches: [ "test" ]
   workflow_dispatch:
 
 jobs:
@@ -42,11 +39,11 @@ jobs:
       - name: Installer dépendances Composer
         run: composer install --no-interaction --prefer-dist
 
-      - name: Migration DB
+      - name: Importer la base de données
         run: |
           mysql -h 127.0.0.1 -P 3306 -u root -prootpw < base.sql
 
-      # --- Build fichier env.php ---
+      # --- Build env.php depuis ton bloc ---
       - name: Build env.php for the app
         run: |
           cat > env.php <<'PHP'
@@ -58,41 +55,58 @@ jobs:
           const BASE_URL = "/";
           PHP
 
-      # --- Debug: vérifier la présence et le contenu (password masqué) ---
+      # --- Debug léger (password masqué) ---
       - name: Vérifier env.php généré
         run: |
-          echo "📂 Contenu du répertoire courant :"
-          ls -la
-          echo
-          echo "📝 env.php (mot de passe masqué) :"
+          echo "📂 Répertoire courant:" && ls -la
+          echo "📝 env.php (pass masqué):"
           sed -E 's/(BDD_PASSWORD[[:space:]]*=\s*")[^"]+/\1*** /' env.php || true
-          echo
-          echo "✅ Test rapide de chargement par PHP :"
           php -r 'require "env.php"; echo "Chargé OK\n";'
 
-      # --- Apache sert index.php à la racine ---
+      # --- Apache sert index.php à la racine, avec expansion correcte du chemin ---
       - name: Installer & configurer Apache (mod_php)
         run: |
+          set -euo pipefail
           sudo apt-get update
           sudo apt-get install -y apache2 libapache2-mod-php
           echo "Listen 8000" | sudo tee -a /etc/apache2/ports.conf
-          cat <<'EOF' | sudo tee /etc/apache2/sites-available/ci.conf
+
+          WORKDIR="$(pwd)"
+          echo "WORKDIR=${WORKDIR}"
+          test -f "${WORKDIR}/index.php" || (echo "❌ index.php introuvable à ${WORKDIR}" && exit 1)
+          chmod -R a+rX "${WORKDIR}"
+
+          cat <<EOF | sudo tee /etc/apache2/sites-available/ci.conf
           <VirtualHost *:8000>
               ServerName localhost
-              DocumentRoot ${GITHUB_WORKSPACE}
+              DocumentRoot ${WORKDIR}
               DirectoryIndex index.php index.html
-              <Directory ${GITHUB_WORKSPACE}>
+              <Directory ${WORKDIR}>
                   AllowOverride All
                   Options Indexes FollowSymLinks
                   Require all granted
               </Directory>
-              ErrorLog ${APACHE_LOG_DIR}/ci_error.log
-              CustomLog ${APACHE_LOG_DIR}/ci_access.log combined
+              ErrorLog \${APACHE_LOG_DIR}/ci_error.log
+              CustomLog \${APACHE_LOG_DIR}/ci_access.log combined
           </VirtualHost>
           EOF
+
           sudo a2enmod rewrite
           sudo a2dissite 000-default.conf || true
           sudo a2ensite ci.conf
           sudo systemctl restart apache2
+
+          # Health-check + logs si échec
+          if ! curl -sSf http://127.0.0.1:8000/ >/dev/null; then
+            echo "⚠️ Health-check KO. Journaux Apache :"
+            sudo tail -n 200 /var/log/apache2/ci_error.log || true
+            sudo tail -n 200 /var/log/apache2/error.log || true
+            exit 1
+          fi
+
       - name: Tests Cypress
         uses: cypress-io/github-action@v6
+        with:
+          wait-on: 'http://127.0.0.1:8000'
+          config: baseUrl=http://127.0.0.1:8000
+          browser: chrome
