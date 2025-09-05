@@ -1,4 +1,4 @@
-name: Setup MySQL and load schema
+name: E2E avec MySQL + Apache + Cypress
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  db:
+  e2e:
     runs-on: ubuntu-latest
 
     services:
@@ -21,70 +21,81 @@ jobs:
           - 3306:3306
         options: >-
           --health-cmd="mysqladmin ping -h 127.0.0.1 -prootpw"
-          --health-interval=5s
+          --health-interval=10s
           --health-timeout=5s
-          --health-retries=30
+          --health-retries=5
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install MySQL client & composer
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y mysql-client php-cli php-mbstring unzip
-          EXPECTED_CHECKSUM="$(php -r 'copy(\"https://composer.github.io/installer.sig\", \"php://stdout\");')"
-          php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-          php -r "if (hash_file('sha384', 'composer-setup.php') !== '$EXPECTED_CHECKSUM') { echo 'Bad installer'; unlink('composer-setup.php'); exit(1); }"
-          php composer-setup.php --install-dir=/usr/local/bin --filename=composer
-          rm composer-setup.php
+      - name: Setup PHP CLI (Composer & outils)
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl, pdo_mysql
+          coverage: none
 
-      - name: Wait for MySQL
-        run: |
-          for i in {1..60}; do
-            mysqladmin ping -h 127.0.0.1 -prootpw && break
-            sleep 2
-          done
+      - name: Installer dépendances Composer
+        run: composer install --no-interaction --prefer-dist
 
-      - name: Create database (idempotent)
+      - name: Migration DB
         run: |
-          mysql -h 127.0.0.1 -P 3306 -u root -prootpw -e \
-            "CREATE DATABASE IF NOT EXISTS taskdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+          mysql -h 127.0.0.1 -P 3306 -u root -prootpw < base.sql
 
-      - name: Load schema from base.sql
-        run: |
-          # Si base.sql contient CREATE DATABASE/USE, tu peux enlever 'taskdb' ci-dessous
-          mysql -h 127.0.0.1 -P 3306 -u root -prootpw taskdb < base.sql
-
+      # --- Build fichier env.php ---
       - name: Build env.php for the app
         run: |
           cat > env.php <<'PHP'
           <?php
           const BDD_LOGIN = "root";
           const BDD_PASSWORD = "rootpw";
-          const BDD_SERVER = "127.0.0.1";
+          const BDD_SERVER = "127.0.0.1:3306";
           const BDD_NAME = "taskdb";
           const BASE_URL = "/";
           PHP
 
-      - name: Install PHP dependencies
-        run: composer install --no-interaction --no-progress
+      # --- Debug: vérifier la présence et le contenu (password masqué) ---
+      - name: Vérifier env.php généré
+        run: |
+          echo "📂 Contenu du répertoire courant :"
+          ls -la
+          echo
+          echo "📝 env.php (mot de passe masqué) :"
+          sed -E 's/(BDD_PASSWORD[[:space:]]*=\s*")[^"]+/\1*** /' env.php || true
+          echo
+          echo "✅ Test rapide de chargement par PHP :"
+          php -r 'require "env.php"; echo "Chargé OK\n";'
 
-            
-      # installation des dépendances PHP
-      - name: Install PHP dependencies
-        run: composer install --no-interaction --prefer-dist
-      
-      # migration de la base de données
-      - name: migration DB
+      # --- Apache sert index.php à la racine ---
+      - name: Installer & configurer Apache (mod_php)
         run: |
-          mysql -h 127.0.0.1 -P 3306 -u root -prootpw < base.sql
-      
-      # démarrage du serveur PHP
-      - name: Run PHP local server
-        run: |
-          php -S 127.0.0.1:8000 -t public &
-      
-      # Cypress Actions
-      - name : Test Cypress
+          sudo apt-get update
+          sudo apt-get install -y apache2 libapache2-mod-php
+          echo "Listen 8000" | sudo tee -a /etc/apache2/ports.conf
+          cat <<'EOF' | sudo tee /etc/apache2/sites-available/ci.conf
+          <VirtualHost *:8000>
+              ServerName localhost
+              DocumentRoot ${GITHUB_WORKSPACE}
+              DirectoryIndex index.php index.html
+              <Directory ${GITHUB_WORKSPACE}>
+                  AllowOverride All
+                  Options Indexes FollowSymLinks
+                  Require all granted
+              </Directory>
+              ErrorLog ${APACHE_LOG_DIR}/ci_error.log
+              CustomLog ${APACHE_LOG_DIR}/ci_access.log combined
+          </VirtualHost>
+          EOF
+          sudo a2enmod rewrite
+          sudo a2dissite 000-default.conf || true
+          sudo a2ensite ci.conf
+          sudo systemctl restart apache2
+          curl -sSf http://127.0.0.1:8000/ >/dev/null
+
+      - name: Tests Cypress
         uses: cypress-io/github-action@v6
+        with:
+          wait-on: 'http://127.0.0.1:8000'
+          config: baseUrl=http://127.0.0.1:8000
+          browser: chrome
