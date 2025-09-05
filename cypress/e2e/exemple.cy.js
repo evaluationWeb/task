@@ -1,5 +1,5 @@
 describe('template spec', () => {
   it('passes', () => {
-    cy.visit('google.com')
+    cy.visit('https://example.cypress.io')
   })
 })
