@@ -94,8 +94,6 @@ jobs:
           sudo a2dissite 000-default.conf || true
           sudo a2ensite ci.conf
           sudo systemctl restart apache2
-          curl -sSf http://127.0.0.1:8000/ >/dev/null
-
       - name: Tests Cypress
         uses: cypress-io/github-action@v6
         with:
