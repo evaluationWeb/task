@@ -33,7 +33,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: mbstring, intl, pdo_mysql
+          extensions: mbstring, intl, pdo_mysql, sodium, zip
           coverage: none
 
       - name: Installer dépendances Composer
@@ -43,7 +43,6 @@ jobs:
         run: |
           mysql -h 127.0.0.1 -P 3306 -u root -prootpw < base.sql
 
-      # --- Build env.php depuis ton bloc ---
       - name: Build env.php for the app
         run: |
           cat > env.php <<'PHP'
@@ -55,7 +54,6 @@ jobs:
           const BASE_URL = "/";
           PHP
 
-      # --- Debug léger (password masqué) ---
       - name: Vérifier env.php généré
         run: |
           echo "📂 Répertoire courant:" && ls -la
@@ -63,7 +61,6 @@ jobs:
           sed -E 's/(BDD_PASSWORD[[:space:]]*=\s*")[^"]+/\1*** /' env.php || true
           php -r 'require "env.php"; echo "Chargé OK\n";'
 
-      # --- Apache sert index.php à la racine, avec expansion correcte du chemin ---
       - name: Installer & configurer Apache (mod_php)
         run: |
           set -euo pipefail
@@ -73,8 +70,17 @@ jobs:
 
           WORKDIR="$(pwd)"
           echo "WORKDIR=${WORKDIR}"
+
+          sudo chmod o+x /home || true
+          sudo chmod o+x /home/runner || true
+          sudo chmod o+x /home/runner/work || true
+          OWNER_DIR="$(dirname "$(dirname "${WORKDIR}")")"
+          REPO_DIR="$(dirname "${WORKDIR}")"
+          sudo chmod o+x "${OWNER_DIR}" || true
+          sudo chmod o+x "${REPO_DIR}" || true
+          sudo chmod -R a+rX "${WORKDIR}"
+
           test -f "${WORKDIR}/index.php" || (echo "❌ index.php introuvable à ${WORKDIR}" && exit 1)
-          chmod -R a+rX "${WORKDIR}"
 
           cat <<EOF | sudo tee /etc/apache2/sites-available/ci.conf
           <VirtualHost *:8000>
@@ -96,9 +102,8 @@ jobs:
           sudo a2ensite ci.conf
           sudo systemctl restart apache2
 
-          # Health-check + logs si échec
           if ! curl -sSf http://127.0.0.1:8000/ >/dev/null; then
-            echo "⚠️ Health-check KO. Journaux Apache :"
+            echo "⚠️ Health-check KO. Logs Apache :"
             sudo tail -n 200 /var/log/apache2/ci_error.log || true
             sudo tail -n 200 /var/log/apache2/error.log || true
             exit 1
