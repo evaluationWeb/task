@@ -1,0 +1,130 @@
+name: E2E avec MySQL + Apache + Cypress
+
+on:
+  push:
+    branches: [ "test" ]
+  pull_request:
+    branches: [ "test" ]
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpw
+          MYSQL_DATABASE: taskdb
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -prootpw"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP CLI (Composer & outils)
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl, pdo_mysql, sodium, zip
+          coverage: none
+
+      - name: Installer dépendances Composer
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Importer la base de données
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -u root -prootpw < base.sql
+
+      # --- APACHE ---
+      - name: Installer Apache + module PHP 8.2
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y apache2 libapache2-mod-php8.2
+          sudo a2enmod php8.2
+
+      - name: Configurer Apache pour port 8000 + rewrite
+        run: |
+          sudo sed -i 's/Listen 80/Listen 8000/' /etc/apache2/ports.conf
+          echo "<VirtualHost *:8000>
+            DocumentRoot /var/www/html
+            <Directory /var/www/html>
+              Options Indexes FollowSymLinks
+              AllowOverride All
+              Require all granted
+              DirectoryIndex index.php
+            </Directory>
+            ErrorLog \${APACHE_LOG_DIR}/error.log
+            CustomLog \${APACHE_LOG_DIR}/access.log combined
+          </VirtualHost>" | sudo tee /etc/apache2/sites-available/000-default.conf
+          sudo a2enmod rewrite
+          sudo service apache2 restart
+
+      - name: Déployer le projet dans /var/www/html
+        run: |
+          sudo rm -rf /var/www/html/*
+          sudo cp -r ./* /var/www/html/
+          sudo chown -R www-data:www-data /var/www/html
+          sudo chmod -R 755 /var/www/html
+
+      - name: Build env.php for the app
+        run: |
+          cat > env.php <<'PHP'
+          <?php
+          const BDD_LOGIN = "root";
+          const BDD_PASSWORD = "rootpw";
+          const BDD_SERVER = "127.0.0.1:3306";
+          const BDD_NAME = "taskdb";
+          const BASE_URL = "/";
+          PHP
+          sudo mv env.php /var/www/html/env.php
+          sudo chown www-data:www-data /var/www/html/env.php
+          sudo chmod 640 /var/www/html/env.php
+
+      - name: Vérifier contenu /var/www/html
+        run: |
+          ls -l /var/www/html
+
+      - name: Vérifier .htaccess
+        run: |
+          if [ -f /var/www/html/.htaccess ]; then
+            echo "📝 .htaccess trouvé :"
+            cat /var/www/html/.htaccess
+          else
+            echo "⚠️ Pas de .htaccess trouvé dans /var/www/html"
+          fi
+
+      - name: Health-check Apache (/ et /index.php)
+        run: |
+          echo "🌐 Test accès à /"
+          if ! curl -i http://127.0.0.1:8000/; then
+            echo "❌ / KO → affichage des logs Apache :"
+            echo "------ error.log ------"
+            sudo tail -n 50 /var/log/apache2/error.log || true
+            echo "------ access.log ------"
+            sudo tail -n 50 /var/log/apache2/access.log || true
+            exit 1
+          fi
+          echo "✅ / OK"
+
+          echo "🌐 Test accès à /index.php"
+          if ! curl -i http://127.0.0.1:8000/index.php; then
+            echo "❌ /index.php KO → affichage des logs Apache :"
+            echo "------ error.log ------"
+            sudo tail -n 50 /var/log/apache2/error.log || true
+            echo "------ access.log ------"
+            sudo tail -n 50 /var/log/apache2/access.log || true
+            exit 1
+          fi
+          echo "✅ /index.php OK"
+
+      # Cypress Actions
+      - name : Test Cypress
+        uses: cypress-io/github-action@v6
