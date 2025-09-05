@@ -41,7 +41,7 @@ jobs:
 
       - name: Importer la base de données
         run: |
-          mysql -h "127.0.0.1" -uroot -prootpw < base.sql
+          mysql -h 127.0.0.1 -P 3306 -u root -prootpw < base.sql
 
       # --- APACHE ---
       - name: Installer Apache + module PHP 8.2
@@ -59,6 +59,7 @@ jobs:
               Options Indexes FollowSymLinks
               AllowOverride All
               Require all granted
+              DirectoryIndex index.php
             </Directory>
             ErrorLog \${APACHE_LOG_DIR}/error.log
             CustomLog \${APACHE_LOG_DIR}/access.log combined
@@ -86,12 +87,18 @@ jobs:
           sudo chown www-data:www-data /var/www/html/env.php
           sudo chmod 640 /var/www/html/env.php
 
+      - name: Vérifier contenu /var/www/html
+        run: |
+          ls -l /var/www/html
+
       - name: Vérifier accessibilité Apache
         run: |
           curl -sSf http://127.0.0.1:8000 || (echo "❌ Health-check KO"; exit 1)
           echo "✅ Apache est joignable sur http://127.0.0.1:8000"
-          ls -ld /var/www/html
-          ls -l /var/www/html
 
-      - name: Tests Cypress
-        uses: cypress-io/github-action@v6
+      # --- CYPRESS ---
+      - name: Installer dépendances Node
+        run: npm install
+
+      - name: Lancer Cypress
+        run: npx cypress run --browser chrome
