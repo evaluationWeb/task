@@ -50,7 +50,7 @@ jobs:
           sudo apt-get install -y apache2 libapache2-mod-php8.2
           sudo a2enmod php8.2
 
-      - name: Configurer Apache pour port 8000
+      - name: Configurer Apache pour port 8000 + rewrite
         run: |
           sudo sed -i 's/Listen 80/Listen 8000/' /etc/apache2/ports.conf
           echo "<VirtualHost *:8000>
@@ -64,6 +64,7 @@ jobs:
             ErrorLog \${APACHE_LOG_DIR}/error.log
             CustomLog \${APACHE_LOG_DIR}/access.log combined
           </VirtualHost>" | sudo tee /etc/apache2/sites-available/000-default.conf
+          sudo a2enmod rewrite
           sudo service apache2 restart
 
       - name: Déployer le projet dans /var/www/html
@@ -91,14 +92,39 @@ jobs:
         run: |
           ls -l /var/www/html
 
-      - name: Vérifier accessibilité Apache
+      - name: Vérifier .htaccess
         run: |
-          curl -sSf http://127.0.0.1:8000 || (echo "❌ Health-check KO"; exit 1)
-          echo "✅ Apache est joignable sur http://127.0.0.1:8000"
+          if [ -f /var/www/html/.htaccess ]; then
+            echo "📝 .htaccess trouvé :"
+            cat /var/www/html/.htaccess
+          else
+            echo "⚠️ Pas de .htaccess trouvé dans /var/www/html"
+          fi
 
-      # --- CYPRESS ---
-      - name: Installer dépendances Node
-        run: npm install
+      - name: Health-check Apache (/ et /index.php)
+        run: |
+          echo "🌐 Test accès à /"
+          if ! curl -i http://127.0.0.1:8000/; then
+            echo "❌ / KO → affichage des logs Apache :"
+            echo "------ error.log ------"
+            sudo tail -n 50 /var/log/apache2/error.log || true
+            echo "------ access.log ------"
+            sudo tail -n 50 /var/log/apache2/access.log || true
+            exit 1
+          fi
+          echo "✅ / OK"
 
-      - name: Lancer Cypress
-        run: npx cypress run --browser chrome
+          echo "🌐 Test accès à /index.php"
+          if ! curl -i http://127.0.0.1:8000/index.php; then
+            echo "❌ /index.php KO → affichage des logs Apache :"
+            echo "------ error.log ------"
+            sudo tail -n 50 /var/log/apache2/error.log || true
+            echo "------ access.log ------"
+            sudo tail -n 50 /var/log/apache2/access.log || true
+            exit 1
+          fi
+          echo "✅ /index.php OK"
+
+      # Cypress Actions
+      - name : Test Cypress
+        uses: cypress-io/github-action@v6
