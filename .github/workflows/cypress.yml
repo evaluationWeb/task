@@ -96,7 +96,3 @@ jobs:
           sudo systemctl restart apache2
       - name: Tests Cypress
         uses: cypress-io/github-action@v6
-        with:
-          wait-on: 'http://127.0.0.1:8000'
-          config: baseUrl=http://127.0.0.1:8000
-          browser: chrome
