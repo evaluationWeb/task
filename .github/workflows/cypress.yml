@@ -41,7 +41,36 @@ jobs:
 
       - name: Importer la base de données
         run: |
-          mysql -h 127.0.0.1 -P 3306 -u root -prootpw < base.sql
+          mysql -h "127.0.0.1" -uroot -prootpw < base.sql
+
+      # --- APACHE ---
+      - name: Installer Apache + module PHP 8.2
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y apache2 libapache2-mod-php8.2
+          sudo a2enmod php8.2
+
+      - name: Configurer Apache pour port 8000
+        run: |
+          sudo sed -i 's/Listen 80/Listen 8000/' /etc/apache2/ports.conf
+          echo "<VirtualHost *:8000>
+            DocumentRoot /var/www/html
+            <Directory /var/www/html>
+              Options Indexes FollowSymLinks
+              AllowOverride All
+              Require all granted
+            </Directory>
+            ErrorLog \${APACHE_LOG_DIR}/error.log
+            CustomLog \${APACHE_LOG_DIR}/access.log combined
+          </VirtualHost>" | sudo tee /etc/apache2/sites-available/000-default.conf
+          sudo service apache2 restart
+
+      - name: Déployer le projet dans /var/www/html
+        run: |
+          sudo rm -rf /var/www/html/*
+          sudo cp -r ./* /var/www/html/
+          sudo chown -R www-data:www-data /var/www/html
+          sudo chmod -R 755 /var/www/html
 
       - name: Build env.php for the app
         run: |
@@ -53,65 +82,16 @@ jobs:
           const BDD_NAME = "taskdb";
           const BASE_URL = "/";
           PHP
+          sudo mv env.php /var/www/html/env.php
+          sudo chown www-data:www-data /var/www/html/env.php
+          sudo chmod 640 /var/www/html/env.php
 
-      - name: Vérifier env.php généré
+      - name: Vérifier accessibilité Apache
         run: |
-          echo "📂 Répertoire courant:" && ls -la
-          echo "📝 env.php (pass masqué):"
-          sed -E 's/(BDD_PASSWORD[[:space:]]*=\s*")[^"]+/\1*** /' env.php || true
-          php -r 'require "env.php"; echo "Chargé OK\n";'
-
-      - name: Installer & configurer Apache (mod_php)
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y apache2 libapache2-mod-php
-          echo "Listen 8000" | sudo tee -a /etc/apache2/ports.conf
-
-          WORKDIR="$(pwd)"
-          echo "WORKDIR=${WORKDIR}"
-
-          sudo chmod o+x /home || true
-          sudo chmod o+x /home/runner || true
-          sudo chmod o+x /home/runner/work || true
-          OWNER_DIR="$(dirname "$(dirname "${WORKDIR}")")"
-          REPO_DIR="$(dirname "${WORKDIR}")"
-          sudo chmod o+x "${OWNER_DIR}" || true
-          sudo chmod o+x "${REPO_DIR}" || true
-          sudo chmod -R a+rX "${WORKDIR}"
-
-          test -f "${WORKDIR}/index.php" || (echo "❌ index.php introuvable à ${WORKDIR}" && exit 1)
-
-          cat <<EOF | sudo tee /etc/apache2/sites-available/ci.conf
-          <VirtualHost *:8000>
-              ServerName localhost
-              DocumentRoot ${WORKDIR}
-              DirectoryIndex index.php index.html
-              <Directory ${WORKDIR}>
-                  AllowOverride All
-                  Options Indexes FollowSymLinks
-                  Require all granted
-              </Directory>
-              ErrorLog \${APACHE_LOG_DIR}/ci_error.log
-              CustomLog \${APACHE_LOG_DIR}/ci_access.log combined
-          </VirtualHost>
-          EOF
-
-          sudo a2enmod rewrite
-          sudo a2dissite 000-default.conf || true
-          sudo a2ensite ci.conf
-          sudo systemctl restart apache2
-
-          if ! curl -sSf http://127.0.0.1:8000/ >/dev/null; then
-            echo "⚠️ Health-check KO. Logs Apache :"
-            sudo tail -n 200 /var/log/apache2/ci_error.log || true
-            sudo tail -n 200 /var/log/apache2/error.log || true
-            exit 1
-          fi
+          curl -sSf http://127.0.0.1:8000 || (echo "❌ Health-check KO"; exit 1)
+          echo "✅ Apache est joignable sur http://127.0.0.1:8000"
+          ls -ld /var/www/html
+          ls -l /var/www/html
 
       - name: Tests Cypress
         uses: cypress-io/github-action@v6
-        with:
-          wait-on: 'http://127.0.0.1:8000'
-          config: baseUrl=http://127.0.0.1:8000
-          browser: chrome
