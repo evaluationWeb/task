@@ -120,4 +120,6 @@ jobs:
           script: |
             ls -al
             cd public_html/task
-            touch test.txt
+            git pull origin main
+            touch pull.txt
+            echo "pull ok"
