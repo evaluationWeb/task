@@ -109,3 +109,18 @@ jobs:
       # Cypress Actions
       - name: Test Cypress
         uses: cypress-io/github-action@v6
+      # Deploy
+      - name: Execute remote SSH commands using password
+        uses: appleboy/ssh-action@v1
+        env:
+          FOLDER: ${{ secrets.SSH_FOLDER }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            ls -al
+            cd public_html
+            cd $FOLDER
+            touch test.txt
