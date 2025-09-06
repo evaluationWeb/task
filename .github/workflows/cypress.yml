@@ -120,6 +120,9 @@ jobs:
           script: |
             ls -al
             cd public_html/task
+            git init
+            git remote add origin https://github.com/evaluationWeb/task.git
             git pull origin main
+            php composer.phar install
             touch pull.txt
             echo "pull ok"
