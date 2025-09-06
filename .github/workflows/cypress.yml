@@ -2,9 +2,9 @@ name: E2E avec MySQL + Apache + Cypress
 
 on:
   push:
-    branches: [ "test" ]
+    branches: ["test"]
   pull_request:
-    branches: [ "test" ]
+    branches: ["test"]
   workflow_dispatch:
 
 jobs:
@@ -26,30 +26,47 @@ jobs:
           --health-retries=5
 
     steps:
+      # Récupération du code du repository
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Installation de php + composer
       - name: Setup PHP CLI (Composer & outils)
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: "8.2"
           extensions: mbstring, intl, pdo_mysql, sodium, zip
           coverage: none
-
+      
+      # Installation des dépendances composer
       - name: Installer dépendances Composer
         run: composer install --no-interaction --prefer-dist
-
+      
+        # Migration de la base de données MySQL
       - name: Importer la base de données
         run: |
           mysql -h 127.0.0.1 -P 3306 -u root -prootpw < base.sql
 
       # --- APACHE ---
+      # installation de Apache
       - name: Installer Apache + module PHP 8.2
         run: |
           sudo apt-get update
           sudo apt-get install -y apache2 libapache2-mod-php8.2
           sudo a2enmod php8.2
+      # Configuration du fichier .htacess
+      - name: Remplacement du fichier .htaccess
+        run: |
+          rm -f .htaccess
+          cat > .htaccess <<'TXT'
+          RewriteEngine On
+          RewriteBase /
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteRule ^(.+)$ index.php [QSA,L]
+          TXT
 
+      # Configuration de Apache VirtualHost port 8000 
       - name: Configurer Apache pour port 8000 + rewrite
         run: |
           sudo sed -i 's/Listen 80/Listen 8000/' /etc/apache2/ports.conf
@@ -67,13 +84,15 @@ jobs:
           sudo a2enmod rewrite
           sudo service apache2 restart
 
+      # déploiement du code à la racine du serveur Apache
       - name: Déployer le projet dans /var/www/html
         run: |
           sudo rm -rf /var/www/html/*
           sudo cp -r ./* /var/www/html/
           sudo chown -R www-data:www-data /var/www/html
           sudo chmod -R 755 /var/www/html
-
+      
+      # Ajout du  Fichier environnement env.php
       - name: Build env.php for the app
         run: |
           cat > env.php <<'PHP'
@@ -87,44 +106,6 @@ jobs:
           sudo mv env.php /var/www/html/env.php
           sudo chown www-data:www-data /var/www/html/env.php
           sudo chmod 640 /var/www/html/env.php
-
-      - name: Vérifier contenu /var/www/html
-        run: |
-          ls -l /var/www/html
-
-      - name: Vérifier .htaccess
-        run: |
-          if [ -f /var/www/html/.htaccess ]; then
-            echo "📝 .htaccess trouvé :"
-            cat /var/www/html/.htaccess
-          else
-            echo "⚠️ Pas de .htaccess trouvé dans /var/www/html"
-          fi
-
-      - name: Health-check Apache (/ et /index.php)
-        run: |
-          echo "🌐 Test accès à /"
-          if ! curl -i http://127.0.0.1:8000/; then
-            echo "❌ / KO → affichage des logs Apache :"
-            echo "------ error.log ------"
-            sudo tail -n 50 /var/log/apache2/error.log || true
-            echo "------ access.log ------"
-            sudo tail -n 50 /var/log/apache2/access.log || true
-            exit 1
-          fi
-          echo "✅ / OK"
-
-          echo "🌐 Test accès à /index.php"
-          if ! curl -i http://127.0.0.1:8000/index.php; then
-            echo "❌ /index.php KO → affichage des logs Apache :"
-            echo "------ error.log ------"
-            sudo tail -n 50 /var/log/apache2/error.log || true
-            echo "------ access.log ------"
-            sudo tail -n 50 /var/log/apache2/access.log || true
-            exit 1
-          fi
-          echo "✅ /index.php OK"
-
       # Cypress Actions
-      - name : Test Cypress
+      - name: Test Cypress
         uses: cypress-io/github-action@v6
