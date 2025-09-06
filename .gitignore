@@ -5,3 +5,6 @@ composer.lock
 /public/image/*.*
 !/public/image/profil.png
 !/public/image/logout.png
+/node_modules/
+!.htaccess
+!.github/workflows/cypress.yml
