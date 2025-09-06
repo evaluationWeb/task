@@ -112,8 +112,6 @@ jobs:
       # Deploy
       - name: Execute remote SSH commands using password
         uses: appleboy/ssh-action@v1
-        env:
-          FOLDER: ${{ secrets.SSH_FOLDER }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
@@ -121,6 +119,5 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             ls -al
-            cd public_html
-            cd $FOLDER
+            cd public_html/task
             touch test.txt
