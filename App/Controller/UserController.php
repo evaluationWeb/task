@@ -137,7 +137,7 @@ class UserController
     public function deconnexion()
     {
         session_destroy();
-        header('Location: /');
+        header('Location: ' . BASE_URL . '');
     }
 
     /**
