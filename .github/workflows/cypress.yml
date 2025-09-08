@@ -2,9 +2,9 @@ name: E2E avec MySQL + Apache + Cypress
 
 on:
   push:
-    branches: [ "test" ]
+    branches: [ "test", "main" ]
   pull_request:
-    branches: [ "test" ]
+    branches: [ "test" , "main"]
   workflow_dispatch:
 
 jobs:
@@ -128,3 +128,17 @@ jobs:
       # Cypress Actions
       - name : Test Cypress
         uses: cypress-io/github-action@v6
+      - name: Execute remote SSH commands using password
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            ls -al
+            cd public_html/task
+            git remote add origin https://github.com/evaluationWeb/task.git
+            git pull origin main
+            php composer.phar install
+            touch pull.txt
