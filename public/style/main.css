@@ -14,6 +14,8 @@ form {
 	margin-top: 5vh;
 }
 
+
+
 td,
 th {
 	text-align: center !important;
@@ -38,5 +40,14 @@ li>a>img {
 	a {
 		margin-left: 1vw;
 		margin-right: 1vw
+	}
+}
+@media screen and (max-width: 768px) {
+	form {
+		width: 80%;
+	}
+	
+	li>a>img {
+		width: 20px;
 	}
 }
