@@ -20,9 +20,9 @@
         <p>Prénom : <?= $userConnected->getFirstname()?></p>
         <p>Email : <?= $userConnected->getEmail()?></p>
         <div class="group">
-            <a href="<?= BASE_URL ?>/user/update/password" ><button data-tooltip="Changer le mot de passe">Changer le mot de passe</button></a>
-            <a href="<?= BASE_URL ?>/user/update/info" ><button data-tooltip="Editer les informations du profil">Editer les informations du profil</button></a>
-            <a href="<?= BASE_URL ?>/user/update/img" ><button data-tooltip="Changer l'image de profil">Remplacer l'image de profil</button></a>
+            <a href="<?=  (BASE_URL === "/") ? "" : BASE_URL ?>/user/update/password" ><button data-tooltip="Changer le mot de passe">Changer le mot de passe</button></a>
+            <a href="<?=  (BASE_URL === "/") ? "" : BASE_URL ?>/user/update/info" ><button data-tooltip="Editer les informations du profil">Editer les informations du profil</button></a>
+            <a href="<?=  (BASE_URL === "/") ? "" : BASE_URL ?>/user/update/img" ><button data-tooltip="Changer l'image de profil">Remplacer l'image de profil</button></a>
         </div> 
     </article>    
          
