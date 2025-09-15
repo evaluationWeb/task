@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Model\Category;
 use App\Model\User;
-use App\Model\task;
+use App\Model\Task;
 use App\Repository\CategoryRepository;
 use App\Repository\TaskRepository;
 use App\Utils\Tools;
