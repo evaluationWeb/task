@@ -39,13 +39,13 @@
                         <?php endforeach ?>
                     </td>
                     <td>
-                        <form action="/task/task/update" method="post">
+                        <form action="/task/update" method="post">
                             <input type="hidden" name="id" value="<?= $task->getIdTask() ?>">
                             <input type="submit" name="update" value="Editer">
                         </form>
                     </td>
                     <td>
-                        <form action="/task/task/validate" method="post">
+                        <form action="/task/validate" method="post">
                             <input type="hidden" name="id" value="<?= $task->getIdTask() ?>">
                             <input type="submit" name="valider" value="Valider">
                         </form>

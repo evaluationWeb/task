@@ -43,7 +43,7 @@
                         </button>
                     </td>
                     <td>
-                        <form action="/task/category/update" method="post">
+                        <form action="/category/update" method="post">
                             <input type="hidden" name="id" value="<?= $category->getIdCategory() ?>">
                             <button type="submit" name="update" data-tooltip="Editer la catégorie">
                                 Editer
