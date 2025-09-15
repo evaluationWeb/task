@@ -24,7 +24,9 @@ const toggleModal = (event, button) => {
 		const deleteCategory = document.querySelector("#delete-category");
 
 		deleteCategory.addEventListener("click", async () => {
-			window.location.href = "/category/delete?id=" + id;
+			const domaine = window.location.hostname;
+			const protocole = window.location.protocol;
+			window.location.href = `${protocole}//${domaine}/category/delete?id=${id}`;
 		});
 	}
 

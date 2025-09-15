@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../public/style/main.css">
     <link rel="stylesheet" href="../public/style/pico.min.css">
-    <script src="../public/script/main.js"></script>
+    <script src="../public/script/main1.js"></script>
     <title>Category</title>
 </head>
 
