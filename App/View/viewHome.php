@@ -13,7 +13,7 @@
         <?php include "App/View/components/navbar.php"; ?>
     </header>
     <main class="container-fluid">
-        <h2> sur notre super site !!</h2>
+        <h2> Nouveau titre du site</h2>
     </main>
 </body>
 
