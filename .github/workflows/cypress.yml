@@ -138,12 +138,12 @@ jobs:
           script: |
             ls -al
             cd public_html/task
-            
             git pull origin main
-            php composer.phar install
             if [ -f pull.txt ]; then
               echo "File pull.txt exists."
-            else 
+              php composer.phar update
+            else
+              php composer.phar install 
               touch pull.txt
               cat > env.php <<'PHP'
               <?php
