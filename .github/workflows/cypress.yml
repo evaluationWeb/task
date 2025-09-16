@@ -158,6 +158,6 @@ jobs:
               const SMTP_SECURITY = "tls";
               const SMTP_LOGIN = "${{ secrets.SMTP_USERNAME }}";
               const SMTP_PASSWORD = "${{ secrets.SMTP_PASSWORD }}";
-              PHP
+              'PHP'
             fi
             
