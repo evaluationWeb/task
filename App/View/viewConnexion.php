@@ -20,7 +20,7 @@
             <input type="password" name="password" placeholder="saisir le mot de passe">
             <input type="submit" value="connexion" name="submit">
             <p class="error"><?= $message ?></p>
-            <a href="<?= BASE_URL ?>/user/password/recover" data-tooltip="Récupération du mot de passe">
+            <a href="<?= (BASE_URL === "/") ? "" : BASE_URL ?>/user/password/recover" data-tooltip="Récupération du mot de passe">
                 <input type="button" value="Récupération du mot de passe">
             </a>
         </form>

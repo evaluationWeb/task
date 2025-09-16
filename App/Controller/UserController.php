@@ -334,7 +334,7 @@ class UserController
                 $date = new \DateTimeImmutable();
                 $dateValidity = $date->getTimestamp();
                 $hashEmail = md5($email);
-                $link = "http://localhost" . $base . "/user/password/generate?email=$hashEmail&validity=$dateValidity";
+                $link = DOMAIN . $base . "/user/password/generate?email=$hashEmail&validity=$dateValidity";
                 //composants de l'email à envoyer
                 $receiver = $email;
                 $subject = "Recuperation du password";

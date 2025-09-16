@@ -152,6 +152,7 @@ jobs:
             const BDD_SERVER = "${{ secrets.BDD_HOST }}";
             const BDD_NAME = "${{ secrets.BDD_NAME }}";
             const BASE_URL = "/";
+            const DOMAIN = "${{ secrets.DOMAIN }}";
             const SMTP_SERVER = "${{ secrets.SMTP_SERVER }}";
             const SMTP_PORT = 587;
             const SMTP_SECURITY = "tls";
