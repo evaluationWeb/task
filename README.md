@@ -1,4 +1,4 @@
-# task
+# task ok
 ![CI](https://github.com/evaluationWeb/task/actions/workflows/cypress.yml/badge.svg?branch=test)
 
 Ce site est un projet d'exercice de cours d'une TODO List en PHP POO.
