@@ -138,7 +138,25 @@ jobs:
           script: |
             ls -al
             cd public_html/task
-            git remote add origin https://github.com/evaluationWeb/task.git
+            
             git pull origin main
-            php composer.phar install
-            touch pull.txt
+            php composer.phar install --no-interaction --prefer-dist
+            if [ -f pull.txt ]; then
+              echo "File pull.txt exists."
+            else 
+              touch pull.txt
+              cat > env.php <<'PHP'
+            <?php
+            const BDD_LOGIN = "${{ secrets.BDD_LOGIN }}";
+            const BDD_PASSWORD = "${{ secrets.BDD_PASSWORD }}";
+            const BDD_SERVER = "${{ secrets.BDD_HOST }}";
+            const BDD_NAME = "${{ secrets.BDD_NAME }}";
+            const BASE_URL = "/";
+            const SMTP_SERVER = "${{ secrets.SMTP_SERVER }}";
+            const SMTP_PORT = 587;
+            const SMTP_SECURITY = "tls";
+            const SMTP_LOGIN = "${{ secrets.SMTP_USERNAME }}";
+            const SMTP_PASSWORD = "${{ secrets.SMTP_PASSWORD }}";
+            PHP
+            fi
+            
