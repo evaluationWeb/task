@@ -140,7 +140,7 @@ jobs:
             cd public_html/task
             
             git pull origin main
-            php composer.phar install --no-interaction --prefer-dist
+            php composer.phar install --no-interaction
             if [ -f pull.txt ]; then
               echo "File pull.txt exists."
             else 
