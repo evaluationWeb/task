@@ -392,7 +392,7 @@ class UserController
                             $this->userRepository->updateForgotPassword($user);
                             //Message de confirmation et redirection
                             $message = "Le mot de passe à été modifié";
-                            header("Refresh:2; url=" . $base . "/user/connexion");
+                            header("Refresh:2; url=" . $base . "/login");
                         }
                         //Sinon on arrête
                         else {

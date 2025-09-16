@@ -146,18 +146,18 @@ jobs:
             else 
               touch pull.txt
               cat > env.php <<'PHP'
-            <?php
-            const BDD_LOGIN = "${{ secrets.BDD_LOGIN }}";
-            const BDD_PASSWORD = "${{ secrets.BDD_PASSWORD }}";
-            const BDD_SERVER = "${{ secrets.BDD_HOST }}";
-            const BDD_NAME = "${{ secrets.BDD_NAME }}";
-            const BASE_URL = "/";
-            const DOMAIN = "${{ secrets.DOMAIN }}";
-            const SMTP_SERVER = "${{ secrets.SMTP_SERVER }}";
-            const SMTP_PORT = 587;
-            const SMTP_SECURITY = "tls";
-            const SMTP_LOGIN = "${{ secrets.SMTP_USERNAME }}";
-            const SMTP_PASSWORD = "${{ secrets.SMTP_PASSWORD }}";
-            PHP
+              <?php
+              const BDD_LOGIN = "${{ secrets.BDD_LOGIN }}";
+              const BDD_PASSWORD = "${{ secrets.BDD_PASSWORD }}";
+              const BDD_SERVER = "${{ secrets.BDD_HOST }}";
+              const BDD_NAME = "${{ secrets.BDD_NAME }}";
+              const BASE_URL = "/";
+              const DOMAIN = "${{ secrets.DOMAIN }}";
+              const SMTP_SERVER = "${{ secrets.SMTP_SERVER }}";
+              const SMTP_PORT = 587;
+              const SMTP_SECURITY = "tls";
+              const SMTP_LOGIN = "${{ secrets.SMTP_USERNAME }}";
+              const SMTP_PASSWORD = "${{ secrets.SMTP_PASSWORD }}";
+              PHP
             fi
             
